@@ -123,6 +123,45 @@ table.t td.r, table.t th.r { text-align: right; font-family: var(--f-mono); font
 
 .note { font-size: 12px; color: var(--muted); max-width: 90ch; }
 .callout { border-left: 3px solid var(--accent); padding: 8px 12px; background: var(--surface-2); border-radius: 0 8px 8px 0; font-size: 13px; color: var(--ink-2); }
+
+.navlbl { font: 500 10px var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); align-self: center; padding: 0 4px 0 12px; white-space: nowrap; }
+.hero { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between; }
+.hero-text { display: grid; gap: 8px; flex: 1 1 420px; min-width: 0; }
+h3.sec { margin: 6px 0 -4px; font-size: 15px; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; display: grid; gap: 8px; align-content: start; }
+.card h4 { margin: 0; font: 600 15px var(--f-display); }
+.card p { font-size: 13px; color: var(--ink-2); }
+.card .acts { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 2px; }
+.card a.open { font-weight: 500; color: var(--accent); text-decoration: none; }
+.verdict { font: 500 11px var(--f-mono); padding: 3px 8px; border-radius: 99px; border: 1px solid; white-space: nowrap; justify-self: start; }
+.verdict.use { color: var(--good); border-color: var(--good); }
+.verdict.learn { color: var(--s1); border-color: var(--s1); }
+.verdict.no { color: var(--bad); border-color: var(--bad); }
+.vbtn { font: 500 13px var(--f-body); color: var(--accent); background: none; border: 1px solid var(--line); border-radius: 99px; padding: 5px 12px; cursor: pointer; }
+.vbtn:hover { border-color: var(--accent); }
+.vbtn.big { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); padding: 10px 18px; font-size: 14px; }
+.explain { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); }
+.explain > summary { cursor: pointer; padding: 12px 16px; display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; font-weight: 600; list-style: none; }
+.explain > summary::-webkit-details-marker { display: none; }
+.explain > summary::before { content: "▸"; color: var(--muted); }
+.explain[open] > summary::before { content: "▾"; }
+.explain .body { padding: 0 16px 16px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px 20px; }
+.explain .body h4 { margin: 0 0 4px; font: 600 12px var(--f-mono); letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
+.explain .body p, .explain .body li { font-size: 13px; color: var(--ink-2); }
+.explain .body ol { margin: 0; padding-left: 18px; display: grid; gap: 3px; }
+.explain .gloss { grid-column: 1 / -1; font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 10px; }
+.explain .gloss b { color: var(--ink-2); }
+.row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.callout.warn { border-left-color: var(--bad); color: var(--ink); }
+.sbtn { font: 500 12px var(--f-body); color: var(--ink-2); background: var(--surface-2); border: 1px solid var(--line); border-radius: 7px; padding: 5px 10px; cursor: pointer; }
+.lbtns { display: flex; gap: 6px; }
+table.legs input, table.legs select { padding: 4px 6px; font-size: 13px; min-width: 64px; }
+table.legs td { padding: 5px 6px; }
+dialog.vid { border: 0; border-radius: 12px; padding: 0; background: var(--surface); color: var(--ink); width: min(960px, 94vw); box-shadow: 0 20px 60px rgb(0 0 0 / 0.4); }
+dialog.vid::backdrop { background: rgb(0 0 0 / 0.6); }
+dialog.vid video { display: block; width: 100%; height: auto; background: #000; }
+dialog.vid .vh { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; gap: 10px; }
 footer { margin-top: 28px; font-size: 12px; color: var(--muted); display: grid; gap: 4px; }
 .loading { padding: 40px; text-align: center; color: var(--muted); }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
@@ -132,20 +171,18 @@ footer { margin-top: 28px; font-size: 12px; color: var(--muted); display: grid; 
   <header class="top">
     <div>
       <h1>Nifty Quant Lab</h1>
-      <p class="sub">Option pricing, delta hedging, trend following, Value at Risk and pairs trading on Indian equities. Every number on this page is computed from real Nifty data with NSE trading costs.</p>
+      <p class="sub">Free tools to plan trades on Indian markets, and research that shows which popular strategies actually hold up once you add real NSE costs.</p>
     </div>
     <span class="badge">NSE · 2001–2025 · costs incl. STT</span>
   </header>
 
-  <div class="findings" id="findings">
-    <a class="finding" href="#hedging"><span class="l">Delta hedging</span><span class="k" id="f-hedge">–</span><span class="t">a month selling Nifty calls at recent volatility, after futures costs</span></a>
-    <a class="finding" href="#risk"><span class="l">Value at Risk</span><span class="k" id="f-var">–</span><span class="t">of months broke the 99% VaR, which promises 1%</span></a>
-    <a class="finding" href="#pairs"><span class="l">Pairs trading</span><span class="k" id="f-pairs">–</span><span class="t">cointegrated pairs still cointegrated out of sample</span></a>
-    <a class="finding" href="#trend"><span class="l">Trend following</span><span class="k" id="f-trend">–</span><span class="t">rank of the famous 50/200 cross among 70 rules</span></a>
-  </div>
-
-  <nav class="tabs" aria-label="Studies">
+  <nav class="tabs" aria-label="Sections">
+    <a href="#start">Start here</a>
+    <span class="navlbl">Tools</span>
+    <a href="#planner">Trade planner</a>
+    <a href="#strategy">Option strategies</a>
     <a href="#pricer">Option pricer</a>
+    <span class="navlbl">Research</span>
     <a href="#hedging">Hedging lab</a>
     <a href="#trend">Trend explorer</a>
     <a href="#risk">Value at Risk</a>
@@ -153,6 +190,123 @@ footer { margin-top: 28px; font-size: 12px; color: var(--muted); display: grid; 
   </nav>
 
   <div id="loading" class="loading">Loading Nifty data…</div>
+
+  <!-- ============ START ============ -->
+  <section class="view" id="v-start" hidden>
+    <div class="hero panel">
+      <div class="hero-text">
+        <h2>What is this?</h2>
+        <p>Two kinds of things live here. <b>Tools</b> answer questions you have before a trade: how many shares to buy, what an option strategy can make or lose. <b>Research</b> tests famous trading ideas on 20+ years of real Nifty data, with real NSE charges, to see which ones actually work.</p>
+        <p class="muted small">Every number is calculated live in your browser. Nothing you type leaves this page.</p>
+      </div>
+      <button type="button" class="vbtn big" data-video="tour">▶ Watch the 1-minute tour</button>
+    </div>
+
+    <h3 class="sec">Tools you can use today</h3>
+    <div class="cards" id="cards-tools"></div>
+    <h3 class="sec">Research: what 20 years of data says</h3>
+    <div class="cards" id="cards-research"></div>
+
+    <h3 class="sec">Headline findings</h3>
+    <div class="findings" id="findings">
+      <a class="finding" href="#hedging"><span class="l">Selling options</span><span class="k" id="f-hedge">–</span><span class="t">average monthly result of selling Nifty calls at recent volatility, after costs</span></a>
+      <a class="finding" href="#risk"><span class="l">Risk models</span><span class="k" id="f-var">–</span><span class="t">of months lost more than the "1-in-100" worst case. It should be 1%.</span></a>
+      <a class="finding" href="#pairs"><span class="l">Pairs trading</span><span class="k" id="f-pairs">–</span><span class="t">stock pairs that kept moving together after they were picked</span></a>
+      <a class="finding" href="#trend"><span class="l">Moving averages</span><span class="k" id="f-trend">–</span><span class="t">where the famous 50/200-day "golden cross" ranks among 70 rules</span></a>
+    </div>
+
+    <div class="panel">
+      <h3 style="margin-bottom:8px">Can I use this for my own trading?</h3>
+      <div class="scroll"><table class="t" id="use-table"></table></div>
+      <p class="note" style="margin-top:8px">This is an education and planning project, not investment advice. Past results do not predict future returns. Check charges, lot sizes and margin with your broker before trading.</p>
+    </div>
+  </section>
+
+  <!-- ============ TRADE PLANNER ============ -->
+  <section class="view" id="v-planner" hidden>
+    <div class="intro">
+      <h2>Trade planner</h2>
+      <p class="muted">Decide how big a trade should be before you take it, so a stop-loss never costs more than you planned. It includes every NSE charge, then shows whether your win rate and reward-to-risk actually make money over 100 trades.</p>
+    </div>
+    <div class="work">
+      <div class="panel controls">
+        <div class="field"><label for="tp-inst">What are you trading?</label>
+          <select id="tp-inst"><option value="equity_intraday">Stock, intraday</option><option value="equity_delivery">Stock, delivery (hold overnight)</option><option value="futures">Futures</option><option value="options">Option (buying)</option></select></div>
+        <div class="seg" role="group" aria-label="Direction">
+          <button type="button" id="tp-long" aria-pressed="true">Buy (long)</button>
+          <button type="button" id="tp-short" aria-pressed="false">Sell (short)</button>
+        </div>
+        <div class="row2">
+          <div class="field"><label for="tp-cap">Trading capital ₹</label><input type="number" id="tp-cap" value="200000" step="10000" min="0"></div>
+          <div class="field"><label for="tp-risk">Risk per trade <output id="tp-risk-o"></output></label><input type="range" id="tp-risk" min="0.25" max="3" step="0.25" value="1"></div>
+        </div>
+        <div class="row3">
+          <div class="field"><label for="tp-entry">Entry ₹</label><input type="number" id="tp-entry" value="1500" step="0.05"></div>
+          <div class="field"><label for="tp-stop">Stop-loss ₹</label><input type="number" id="tp-stop" value="1485" step="0.05"></div>
+          <div class="field"><label for="tp-tgt">Target ₹</label><input type="number" id="tp-tgt" value="1530" step="0.05"></div>
+        </div>
+        <div class="row2">
+          <div class="field" id="tp-lot-f"><label for="tp-lot">Lot size</label><input type="number" id="tp-lot" value="75" step="1" min="1"></div>
+          <div class="field"><label for="tp-brk">Brokerage per order ₹</label><input type="number" id="tp-brk" value="20" step="1" min="0"></div>
+        </div>
+        <p class="small muted" id="tp-hint"></p>
+      </div>
+      <div class="stack">
+        <div id="tp-err" class="callout warn" hidden></div>
+        <div class="stats" id="tp-stats"></div>
+        <div class="panel">
+          <div class="chart-head"><h3>Charges for the full trade (in and out at target)</h3><span class="small muted">NSE rates after Budget 2026</span></div>
+          <div class="scroll"><table class="t" id="tp-charges"></table></div>
+        </div>
+        <div class="panel">
+          <div class="chart-head"><h3>Does your edge make money? 100 trades, simulated 2,000 times</h3></div>
+          <div class="row2" style="margin-bottom:10px">
+            <div class="field"><label for="tp-wr">Your win rate <output id="tp-wr-o"></output></label><input type="range" id="tp-wr" min="20" max="80" step="1" value="45"></div>
+            <div class="field"><label for="tp-rr">Average win ÷ average loss <output id="tp-rr-o"></output></label><input type="range" id="tp-rr" min="0.5" max="4" step="0.1" value="2"></div>
+          </div>
+          <div class="stats" id="tp-ev"></div>
+          <div class="chart-head" style="margin-top:12px"><span class="small muted">Each faint line is one possible run of 100 trades. Same skill, different luck.</span><div class="legend" id="tp-leg"></div></div>
+          <div class="chart" id="tp-sim"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ OPTION STRATEGIES ============ -->
+  <section class="view" id="v-strategy" hidden>
+    <div class="intro">
+      <h2>Option strategy builder</h2>
+      <p class="muted">Pick a strategy and see exactly what it can make or lose on Nifty, where it breaks even, and the chance it ends in profit. Premiums start at fair model prices; type in live prices from your broker's option chain to plan a real trade.</p>
+    </div>
+    <div class="work">
+      <div class="panel controls">
+        <div class="field"><label for="os-name">Strategy</label><select id="os-name"></select></div>
+        <p class="small muted" id="os-desc"></p>
+        <div class="row2">
+          <div class="field"><label for="os-S">Nifty level</label><input type="number" id="os-S" value="24000" step="50"></div>
+          <div class="field"><label for="os-lot">Lot size</label><input type="number" id="os-lot" value="75" step="1" min="1"></div>
+        </div>
+        <div class="field"><label for="os-days">Days to expiry <output id="os-days-o"></output></label><input type="range" id="os-days" min="1" max="60" value="7"></div>
+        <div class="field"><label for="os-iv">Implied volatility (India VIX is a good guide) <output id="os-iv-o"></output></label><input type="range" id="os-iv" min="8" max="40" step="0.5" value="13"></div>
+        <p class="small muted">Rate 6%, dividend yield 1.3%. Selling options needs margin, often over ₹1 lakh per lot: check your broker's margin calculator.</p>
+      </div>
+      <div class="stack">
+        <div class="stats" id="os-stats"></div>
+        <div class="panel">
+          <div class="chart-head"><h3>Profit or loss vs where Nifty ends up</h3><div class="legend" id="os-leg"></div></div>
+          <div class="chart" id="os-chart"></div>
+        </div>
+        <div class="panel">
+          <div class="chart-head"><h3>Legs</h3><div class="lbtns"><button type="button" class="sbtn" id="os-add">+ Add leg</button><button type="button" class="sbtn" id="os-reset">Reset prices</button></div></div>
+          <div class="scroll"><table class="t legs" id="os-legs"></table></div>
+        </div>
+        <div class="panel">
+          <div class="chart-head"><h3>Position Greeks: how the position reacts</h3></div>
+          <div class="scroll"><table class="t" id="os-greeks"></table></div>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <!-- ============ PRICER ============ -->
   <section class="view" id="v-pricer" hidden>
@@ -302,9 +456,11 @@ footer { margin-top: 28px; font-size: 12px; color: var(--muted); display: grid; 
 
   <footer>
     <span>Data: Nifty 50 index daily closes 2001–2023 and 50 Nifty 50 stocks Oct 2020 – Sep 2025, from public GitHub datasets. Rates r = 6%, dividend yield 1.3%. NSE charges after the Budget 2026 STT revision.</span>
-    <span>The pricer, hedging lab and trend explorer recompute in your browser with the same maths as the Python projects (checked to 6 decimal places). Educational research, not investment advice.</span>
+    <span>Everything recomputes in your browser with the same maths as the Python projects (checked to 6 decimal places). Charges and lot sizes change: confirm them with your broker. Educational research, not investment advice.</span>
   </footer>
 </div>
+
+<dialog class="vid" id="vid"><div class="vh"><b id="vid-title"></b><button type="button" class="sbtn" id="vid-close">Close</button></div><video id="vid-el" controls playsinline preload="none"></video></dialog>
 
 <script src="lib.js"></script>
 <script>
@@ -397,7 +553,7 @@ function lineChart(host, o) {
     cross.setAttribute("x1", X(xs[i])); cross.setAttribute("x2", X(xs[i])); cross.setAttribute("visibility", "visible");
     const rows = [];
     if (o.bars) rows.push([o.bars.name || "Value", o.bars.values[i], css("--bar-2")]);
-    for (const s of o.series || []) rows.push([s.name, s.values[i], s.color]);
+    for (const s of o.series || []) if (!s.noTip) rows.push([s.name, s.values[i], s.color]);
     tip.innerHTML = `<b>${esc((o.tipX || o.xFmt || String)(xs[i], i))}</b>` + rows.filter((r) => Number.isFinite(r[1]))
       .map((r) => `<span><i style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${r[2]};margin-right:6px"></i>${esc(r[0])} <span class="mono">${(o.tipFmt || o.yFmt || String)(r[1])}</span></span>`).join("");
     tip.hidden = false;
@@ -666,10 +822,223 @@ function pairs() {
     `<tr><td colspan="7" class="small muted">ADF below −3.34 means cointegrated at 5% (Engle-Granger critical value). "Broke" means it passed while selecting and failed when traded.</td></tr>`;
 }
 
+/* ---------------- plain-English layer ---------------- */
+const VERDICT = { use: ["use", "Use it for real decisions"], learn: ["learn", "Learn from it"], no: ["no", "Don't trade it as-is"] };
+const VIDEOS = {
+  tour: ["The 1-minute tour", "videos/tour.mp4"], planner: ["Trade planner", "videos/planner.mp4"],
+  strategy: ["Option strategy builder", "videos/strategy.mp4"], pricer: ["Option pricer", "videos/pricer.mp4"],
+  hedging: ["Hedging lab", "videos/hedging.mp4"], trend: ["Trend explorer", "videos/trend.mp4"],
+  risk: ["Value at Risk", "videos/risk.mp4"], pairs: ["Pairs trading", "videos/pairs.mp4"],
+};
+const EXPLAIN = {
+  planner: { group: "tools", verdict: "use", card: "How many shares or lots to buy so a stop-loss costs exactly what you planned, with every NSE charge included.",
+    what: "Professional traders decide the loss they accept <i>before</i> entering. This turns that rule into a number of shares or lots, including STT, exchange fees, GST, stamp duty and brokerage.",
+    steps: ["Pick what you trade and enter your capital and risk per trade (1% is a common rule).", "Type your entry, stop-loss and target.", "Read the quantity, then set your real win rate below to see if the plan makes money over 100 trades."],
+    look: "Charges can eat a big part of a small intraday target. The simulation shows that even a good strategy has long losing streaks, which is why risking small amounts matters.",
+    gloss: "<b>Risk per trade</b>: the share of capital you lose if the stop is hit. <b>Reward-to-risk</b>: profit at target ÷ loss at stop. <b>Expectancy</b>: average result per trade, in units of what you risk." },
+  strategy: { group: "tools", verdict: "use", card: "See what a straddle, spread or iron condor on Nifty can make or lose, its breakevens and its chance of profit.",
+    what: "Options let you bet on direction, on movement, or on calm markets. Every strategy has a shape: where it profits, where it loses, and how much. This draws that shape for you.",
+    steps: ["Choose a strategy and set the Nifty level, days to expiry and India VIX.", "Optional: type real premiums from your broker's option chain into the legs table.", "Read max profit, max loss, breakevens and chance of profit before you place the trade."],
+    look: "Selling strategies (short straddle, iron condor) win often but lose big when Nifty moves sharply. Buying strategies lose small amounts often and win occasionally.",
+    gloss: "<b>Premium</b>: price of the option. <b>Breakeven</b>: Nifty level where you neither make nor lose money at expiry. <b>Chance of profit</b>: estimated from implied volatility; real markets have more big jumps than the model assumes." },
+  pricer: { group: "tools", verdict: "use", card: "Fair value of a Nifty option and its Greeks, checked three independent ways.",
+    what: "An option's fair price depends on where Nifty is, the strike, time left and how volatile the market is. This calculates it with three different methods that should agree.",
+    steps: ["Set spot, strike, days to expiry and volatility.", "Compare the three prices: if they agree, the maths is right.", "Type a market price to find the volatility the market is implying."],
+    look: "Watch theta: an at-the-money option loses value every day just from time passing. Vega shows how much a change in VIX moves the price.",
+    gloss: "<b>Delta</b>: rupee change per 1-point Nifty move. <b>Theta</b>: value lost per day. <b>Vega</b>: change per 1 point of volatility. <b>Implied volatility</b>: the volatility that makes the formula match the market price." },
+  hedging: { group: "research", verdict: "learn", card: "Selling options and hedging them looks like steady income. 22 years of Nifty data say otherwise after costs.",
+    what: "Option sellers collect premium and hedge with futures so market direction doesn't matter. What's left is a bet that the market will move less than the option price assumed.",
+    steps: ["Start with no markup: this sells options at recent volatility.", "Drag the markup up until the average turns positive: that's the edge you'd need.", "Switch hedging to weekly or never and watch the worst month get much worse."],
+    look: "Costs decide the result. Without charges this strategy roughly breaks even; with them it loses. Single big days (like the May 2009 election result) cause the worst losses.",
+    gloss: "<b>Delta hedging</b>: holding futures to cancel out the option's sensitivity to Nifty. <b>Markup</b>: how many volatility points above recent volatility you sell at. India VIX usually sits above recent volatility." },
+  trend: { group: "research", verdict: "learn", card: "Do moving-average crossovers beat simply holding Nifty? Test all 70 versions, including the famous 50/200.",
+    what: "A trend rule buys Nifty when a short-term average price is above a long-term one, and moves to cash otherwise. It's one of the most popular trading ideas.",
+    steps: ["Pick a rule, or click any square in the heatmaps.", "Compare growth and the worst drop with buy-and-hold.", "Untick 'trade the day after' to see how a common backtest mistake inflates results."],
+    look: "Trend rules mostly don't earn more than buy-and-hold, but they avoid the deepest crashes. Use them as a risk control for long-term investing, not as a money machine.",
+    gloss: "<b>SMA/EMA</b>: simple or exponential moving average. <b>Drawdown</b>: fall from a previous peak. <b>Sharpe ratio</b>: return above the 6% risk-free rate per unit of volatility." },
+  risk: { group: "research", verdict: "learn", card: "Banks estimate a 'worst month' with Value at Risk. On Nifty it was broken three times as often as promised.",
+    what: "Value at Risk (VaR) estimates how much you could lose in a bad month. A 99% VaR should only be exceeded once in 100 months. This checks that promise against 22 years of data.",
+    steps: ["Look at the red dots: months that lost more than the forecast.", "Switch between the four models and compare their breach rates.", "Read the correlation panel: the same five stocks get riskier when they move together."],
+    look: "Crashes come after calm periods, so models built on recent calm data miss them. Treat any 'worst case' number as a minimum, not a limit.",
+    gloss: "<b>VaR</b>: loss you won't exceed with a given confidence. <b>Expected shortfall</b>: average loss in the bad cases beyond VaR. <b>Correlation</b>: how much stocks move together, from −1 to 1." },
+  pairs: { group: "research", verdict: "no", card: "Two related stocks that drift apart should come back together. This tests that on 69 Nifty pairs.",
+    what: "Pairs trading buys the cheaper of two linked stocks (like HDFC Bank and ICICI Bank) and sells the dearer one, betting the gap closes. It needs the pair to keep moving together.",
+    steps: ["Pick a sector to narrow the chart.", "Blue dots passed the statistical test when they were picked; check where they ended up.", "Read the table: 'broke' means the relationship stopped holding."],
+    look: "Every pair that tested as linked in 2020–23 stopped testing as linked in 2023–25. Relationships between stocks change, so this needs constant re-checking and stop-losses.",
+    gloss: "<b>Cointegration</b>: the gap between two prices keeps returning to an average. <b>ADF test</b>: the statistical test for that (below −3.34 passes). <b>Out of sample</b>: data that wasn't used to pick the pairs." },
+};
+const TITLES = { planner: "Trade planner", strategy: "Option strategy builder", pricer: "Option pricer", hedging: "Hedging lab", trend: "Trend explorer", risk: "Value at Risk", pairs: "Pairs trading" };
+function vbtn(key, label = "▶ Watch how to use it") { return VIDEOS[key] ? `<button type="button" class="vbtn" data-video="${key}">${label}</button>` : ""; }
+function renderExplain() {
+  for (const [k, e] of Object.entries(EXPLAIN)) {
+    const sec = $("v-" + k), intro = sec && sec.querySelector(".intro");
+    if (!intro || sec.querySelector(".explain")) continue;
+    const d = document.createElement("details");
+    d.className = "explain";
+    d.innerHTML = `<summary>In plain English <span class="verdict ${VERDICT[e.verdict][0]}">${VERDICT[e.verdict][1]}</span>${vbtn(k)}</summary>
+      <div class="body"><div><h4>What it is</h4><p>${e.what}</p></div>
+      <div><h4>How to use it</h4><ol>${e.steps.map((s) => `<li>${s}</li>`).join("")}</ol></div>
+      <div><h4>What to notice</h4><p>${e.look}</p></div><p class="gloss">${e.gloss}</p></div>`;
+    try { d.open = localStorage.getItem("explain-" + k) !== "closed"; } catch { d.open = true; }
+    d.addEventListener("toggle", () => { try { localStorage.setItem("explain-" + k, d.open ? "open" : "closed"); } catch { /* storage blocked */ } });
+    intro.insertAdjacentElement("afterend", d);
+  }
+}
+function start() {
+  for (const g of ["tools", "research"]) {
+    $("cards-" + g).innerHTML = Object.entries(EXPLAIN).filter(([, e]) => e.group === g).map(([k, e]) => `<div class="card">
+      <h4>${TITLES[k]}</h4><span class="verdict ${VERDICT[e.verdict][0]}">${VERDICT[e.verdict][1]}</span><p>${e.card}</p>
+      <div class="acts"><a class="open" href="#${k}">Open →</a>${vbtn(k, "▶ Video")}</div></div>`).join("");
+  }
+  $("use-table").innerHTML = `<tr><th>Section</th><th>Verdict</th><th>How it helps in real trading</th></tr>` + [
+    ["planner", "Size every trade so a stop-loss can't hurt more than planned, and know your charges before you enter."],
+    ["strategy", "Check max loss, breakevens and chance of profit for any Nifty options trade before placing it."],
+    ["pricer", "Judge whether an option premium looks cheap or expensive versus a fair model price."],
+    ["hedging", "Shows why selling options for 'income' needs prices well above recent volatility to survive costs and gaps."],
+    ["trend", "A slow trend filter can cut crash losses for long-term index investing. It is not a way to beat the market."],
+    ["risk", "Size positions assuming losses bigger than any model predicts. Diversification falls when you need it most."],
+    ["pairs", "Don't trade pairs on an old statistical test. Relationships between stocks break."],
+  ].map(([k, t]) => `<tr><td><a href="#${k}">${TITLES[k]}</a></td><td><span class="verdict ${VERDICT[EXPLAIN[k].verdict][0]}">${VERDICT[EXPLAIN[k].verdict][1]}</span></td><td class="muted">${t}</td></tr>`).join("");
+}
+
+/* ---------------- TRADE PLANNER ---------------- */
+const TP = { side: "long" };
+const inr0 = (x) => "₹" + Math.round(x).toLocaleString("en-IN");
+function planner() {
+  const inst = $("tp-inst").value, fno = inst === "futures" || inst === "options";
+  if (inst === "options" && TP.side === "short") { TP.side = "long"; setSeg(["tp-long", "tp-short"], "tp-long"); }
+  $("tp-short").disabled = inst === "options";
+  $("tp-lot-f").hidden = !fno;
+  $("tp-risk-o").textContent = (+$("tp-risk").value).toFixed(2) + "%";
+  $("tp-hint").textContent = inst === "options" ? "For options, enter the option premium (not the Nifty level) as entry, stop and target." :
+    inst === "futures" ? "Enter futures prices. Quantity is rounded down to whole lots. Set the lot size to the current NSE value." :
+    "Intraday positions must be closed the same day. Short selling stocks is intraday-only in India.";
+  const P = QL.positionSize({ capital: +$("tp-cap").value, riskPct: +$("tp-risk").value / 100, entry: +$("tp-entry").value, stop: +$("tp-stop").value,
+    target: +$("tp-tgt").value, side: TP.side, inst, lotSize: Math.max(1, +$("tp-lot").value), brokerage: +$("tp-brk").value });
+  $("tp-err").hidden = !P.error && !P.targetError;
+  $("tp-err").textContent = P.error || P.targetError || "";
+  if (P.error) { $("tp-stats").innerHTML = ""; $("tp-charges").innerHTML = ""; return; }
+  const unit = inst === "futures" || inst === "options" ? `${P.lots} lot${P.lots === 1 ? "" : "s"} (${P.qty} units)` : `${P.qty.toLocaleString("en-IN")} shares`;
+  $("tp-stats").innerHTML = [
+    ["Buy / sell", unit, "", TP.side === "long" ? "buy at entry" : "sell at entry"],
+    ["Position value", inr0(P.notional), "", inst === "equity_intraday" ? "intraday margin is usually less" : ""],
+    ["Loss if stop hits", "−" + inr0(P.lossAtStop), "neg", `budget ${inr0(P.budget)}`],
+    ["Profit at target", P.profitAtTarget != null ? "+" + inr0(P.profitAtTarget) : "–", P.profitAtTarget > 0 ? "pos" : "", "after all charges"],
+    ["Reward : risk", P.rr != null ? "1 : " + P.rr.toFixed(2) : "–", "", "after charges"],
+    ["Move to cover charges", "₹" + P.breakevenMove.toFixed(2), "", "per unit, before any profit"],
+  ].map(([n, v, c, s]) => `<div class="stat"><span class="n">${n}</span><span class="v ${c}">${v}</span>${s ? `<span class="n">${s}</span>` : ""}</div>`).join("");
+  const ch = P.chargesAtTarget || P.chargesAtStop;
+  $("tp-charges").innerHTML = `<tr><th>Charge</th><th class="r">Amount</th><th>What it is</th></tr>` + [
+    ["Brokerage", ch.brokerage, "Your broker's fee, both orders"], ["STT", ch.stt, "Securities Transaction Tax, paid to the government"],
+    ["Exchange fee", ch.exchange, "NSE transaction charge"], ["GST", ch.gst, "18% on brokerage and exchange fees"],
+    ["Stamp duty", ch.stamp, "On the buy side only"], ["SEBI fee", ch.sebi, "₹10 per crore of turnover"],
+  ].map(([a, b, c]) => `<tr><td>${a}</td><td class="r">₹${b.toFixed(2)}</td><td class="muted">${c}</td></tr>`).join("") +
+    `<tr><td><b>Total</b></td><td class="r"><b>₹${ch.total.toFixed(2)}</b></td><td class="muted">${P.profitAtTarget > 0 ? pct(ch.total / (P.profitAtTarget + ch.total), 0) + " of the gross profit at target" : ""}</td></tr>`;
+  if (P.rr && document.activeElement !== $("tp-rr")) $("tp-rr").value = Math.min(4, Math.max(0.5, P.rr)).toFixed(1);
+  plannerSim();
+}
+function plannerSim() {
+  const wr = +$("tp-wr").value / 100, rr = +$("tp-rr").value, risk = +$("tp-risk").value / 100, cap = +$("tp-cap").value;
+  $("tp-wr-o").textContent = Math.round(wr * 100) + "%";
+  $("tp-rr-o").textContent = rr.toFixed(1) + "×";
+  const E = QL.expectancy(wr, rr), sim = QL.simulateTrades({ winRate: wr, rr, riskPct: risk });
+  $("tp-ev").innerHTML = [
+    ["Average result per trade", (E.evR >= 0 ? "+" : "−") + Math.abs(E.evR).toFixed(2) + " R", E.evR >= 0 ? "pos" : "neg", `≈ ${inr0(E.evR * cap * risk)} per trade`],
+    ["Win rate needed to break even", pct(E.breakevenWinRate, 0), "", `at ${rr.toFixed(1)}× reward : risk`],
+    ["Typical capital after 100 trades", inr0(cap * sim.p50), sim.p50 >= 1 ? "pos" : "neg", `bad luck (1 in 10): ${inr0(cap * sim.p10)}`],
+    ["Chance of being down", pct(sim.lossProb, 0), "", "after 100 trades"],
+    ["Typical worst losing streak", sim.medianStreak + " in a row", "", `1 in 10 runs: ${sim.streak90}+`],
+    ["Typical worst drawdown", pct(sim.medianMaxDD, 0), "neg", "fall from a peak"],
+  ].map(([n, v, c, s]) => `<div class="stat"><span class="n">${n}</span><span class="v ${c}">${v}</span><span class="n">${s}</span></div>`).join("");
+  const xs = sim.sample[0].map((_, i) => i), med = xs.map((i) => { const v = sim.sample.map((p) => p[i]).sort((a, b) => a - b); return v[v.length >> 1]; });
+  legend($("tp-leg"), [{ name: "Median run", color: css("--s1") }, { name: "Individual runs", color: css("--bar-2") }]);
+  lineChart($("tp-sim"), { x: xs, series: [...sim.sample.map((p, k) => ({ name: "Run " + (k + 1), values: p.map((v) => v * cap), color: css("--bar"), width: 1, noTip: true })),
+    { name: "Median", values: med.map((v) => v * cap), color: css("--s1"), width: 2.5 }],
+    yFmt: (v) => "₹" + (v / 1e5).toFixed(1) + "L", tipFmt: inr0, xFmt: (v) => String(v), tipX: (v) => "After trade " + v, height: 240, label: "Simulated equity curves" });
+}
+
+/* ---------------- OPTION STRATEGIES ---------------- */
+const OS = { legs: [], name: "Iron condor" };
+const OS_DESC = {
+  "Long call": "Bet on Nifty rising. Loss limited to the premium paid.", "Long put": "Bet on Nifty falling, or insure a portfolio. Loss limited to premium.",
+  "Bull call spread": "Cheaper bet on a moderate rise. Profit and loss both capped.", "Bear put spread": "Cheaper bet on a moderate fall. Profit and loss both capped.",
+  "Long straddle": "Bet on a big move in either direction, e.g. before results or elections.", "Short straddle": "Bet that Nifty stays still. Earns premium, but losses are unlimited.",
+  "Short strangle": "Like a short straddle with more room either side. Still unlimited loss.", "Iron condor": "Bet that Nifty stays in a range, with losses capped by the outer options.",
+  "Covered call": "Hold Nifty (via futures) and sell a call above it for income; gives up gains above the strike.", "Protective put": "Hold Nifty and buy a put as insurance against a fall.",
+};
+function osParams() {
+  return { S: +$("os-S").value, T: Math.max(1, +$("os-days").value) / 365, r: 0.06, q: 0.013, iv: +$("os-iv").value / 100, lot: Math.max(1, +$("os-lot").value) };
+}
+function osLoad(name) {
+  const p = osParams();
+  OS.name = name;
+  OS.legs = QL.strategyTemplate(name, p.S).map((L) => ({ ...L, premium: +QL.legPremium(L, p.S, p.T, p.r, p.iv, p.q).toFixed(2) }));
+  strategy();
+}
+function osReprice() { const p = osParams(); OS.legs.forEach((L) => { L.premium = +QL.legPremium(L, p.S, p.T, p.r, p.iv, p.q).toFixed(2); }); strategy(); }
+function strategy() {
+  const p = osParams(), legs = OS.legs;
+  $("os-days-o").textContent = $("os-days").value + " d";
+  $("os-iv-o").textContent = (+$("os-iv").value).toFixed(1) + "%";
+  $("os-desc").textContent = OS_DESC[OS.name] || "Custom position.";
+  // legs table
+  $("os-legs").innerHTML = `<tr><th>Buy / sell</th><th>Type</th><th>Strike</th><th>Lots</th><th>Premium ₹</th><th></th></tr>` + legs.map((L, i) => `<tr>
+    <td><select data-i="${i}" data-k="side"><option value="1"${L.side > 0 ? " selected" : ""}>Buy</option><option value="-1"${L.side < 0 ? " selected" : ""}>Sell</option></select></td>
+    <td><select data-i="${i}" data-k="type">${["call", "put", "future"].map((t) => `<option${L.type === t ? " selected" : ""}>${t}</option>`).join("")}</select></td>
+    <td>${L.type === "future" ? '<span class="muted small">–</span>' : `<input type="number" step="50" value="${L.strike}" data-i="${i}" data-k="strike">`}</td>
+    <td><input type="number" min="1" step="1" value="${L.lots}" data-i="${i}" data-k="lots"></td>
+    <td><input type="number" min="0" step="0.05" value="${L.premium}" data-i="${i}" data-k="premium" aria-label="${L.type === "future" ? "Futures price" : "Premium"}"></td>
+    <td><button type="button" class="sbtn" data-del="${i}" aria-label="Remove leg">✕</button></td></tr>`).join("");
+  $("os-legs").querySelectorAll("[data-k]").forEach((e) => e.addEventListener("change", () => {
+    const L = OS.legs[+e.dataset.i], k = e.dataset.k;
+    L[k] = k === "type" ? e.value : +e.value;
+    if (k === "type" || k === "strike") L.premium = +QL.legPremium(L, p.S, p.T, p.r, p.iv, p.q).toFixed(2);
+    OS.name = "Custom"; $("os-name").value = "Custom"; strategy();
+  }));
+  $("os-legs").querySelectorAll("[data-del]").forEach((b) => b.addEventListener("click", () => { OS.legs.splice(+b.dataset.del, 1); OS.name = "Custom"; $("os-name").value = "Custom"; strategy(); }));
+  if (!legs.length) { $("os-stats").innerHTML = `<div class="stat"><span class="n">Add a leg to start.</span></div>`; $("os-chart").innerHTML = ""; $("os-greeks").innerHTML = ""; return; }
+  const st = QL.strategyStats(legs, p.S, p.T, p.r, p.iv, p.q, p.lot), ch = QL.strategyCharges(legs, p.lot);
+  const money = (x) => x === Infinity ? "Unlimited" : x === -Infinity ? "Unlimited" : (x >= 0 ? "+" : "−") + inr0(Math.abs(x));
+  const hasFut = legs.some((L) => L.type === "future");
+  $("os-stats").innerHTML = [
+    ["You " + (st.netPremium >= 0 ? "receive" : "pay"), inr0(Math.abs(st.netPremium)), st.netPremium >= 0 ? "pos" : "", "option premiums, at the start"],
+    ["Max profit at expiry", money(st.maxProfit), "pos", ""],
+    ["Max loss at expiry", money(st.maxLoss), "neg", st.maxLoss === -Infinity ? "if Nifty moves far enough" : hasFut ? "if Nifty fell to zero" : ""],
+    ["Breakeven Nifty", st.breakevens.length ? st.breakevens.map((b) => Math.round(b).toLocaleString("en-IN")).join(" / ") : "none", "", ""],
+    ["Chance of profit", pct(st.pop, 0), "", `model estimate at ${(p.iv * 100).toFixed(1)}% IV`],
+    ["Charges to open", inr0(ch.total), "", "STT, exchange, GST, stamp, brokerage"],
+  ].map(([n, v, c, s]) => `<div class="stat"><span class="n">${n}</span><span class="v ${c}">${v}</span>${s ? `<span class="n">${s}</span>` : ""}</div>`).join("");
+  // chart: +/- ~4 standard deviations of the expected move, at least ±8%
+  const span = Math.max(0.08, 4 * p.iv * Math.sqrt(p.T)), xs = [], ex = [], now = [];
+  for (let i = 0; i <= 200; i++) { const x = p.S * (1 - span + 2 * span * i / 200); xs.push(x); ex.push(QL.strategyPayoff(legs, x, p.lot)); now.push(QL.strategyValue(legs, x, p.T, p.r, p.iv, p.q, p.lot)); }
+  legend($("os-leg"), [{ name: "At expiry", color: css("--s2") }, { name: "Today (if Nifty jumped there now)", color: css("--s1") }, { name: "Nifty now", color: css("--ink"), dot: true }]);
+  lineChart($("os-chart"), { x: xs, series: [{ name: "At expiry", values: ex, color: css("--s2"), dash: "5 4" }, { name: "Today", values: now, color: css("--s1") }],
+    zero: true, points: [{ x: p.S, y: QL.strategyValue(legs, p.S, p.T, p.r, p.iv, p.q, p.lot), color: css("--ink") }],
+    yFmt: (v) => Math.abs(v) < 1 ? "₹0" : (v < 0 ? "−₹" : "₹") + Math.abs(v / 1000).toFixed(0) + "k", tipFmt: (v) => (v < 0 ? "−" : "+") + inr0(Math.abs(v)),
+    xFmt: (v) => Math.round(v).toLocaleString("en-IN"), tipX: (v) => "Nifty at " + Math.round(v).toLocaleString("en-IN"), height: 280, label: "Strategy payoff" });
+  const g = QL.strategyGreeks(legs, p.S, p.T, p.r, p.iv, p.q, p.lot);
+  $("os-greeks").innerHTML = `<tr><th>Greek</th><th class="r">Value</th><th>In plain words</th></tr>` + [
+    ["Delta", g.delta.toFixed(1), `You ${g.delta >= 0 ? "gain" : "lose"} about ${inr0(Math.abs(g.delta) * 50)} if Nifty rises 50 points right now`],
+    ["Theta", (g.theta >= 0 ? "+" : "−") + inr0(Math.abs(g.theta)), `Each day that passes ${g.theta >= 0 ? "adds" : "costs"} this much, if nothing else changes`],
+    ["Vega", (g.vega >= 0 ? "+" : "−") + inr0(Math.abs(g.vega)), `What you ${g.vega >= 0 ? "gain" : "lose"} if India VIX rises 1 point`],
+    ["Gamma", g.gamma.toFixed(3), "How fast delta changes as Nifty moves. Large and negative means sharp moves hurt quickly."],
+  ].map(([a, b, c]) => `<tr><td>${a}</td><td class="r">${b}</td><td class="muted">${c}</td></tr>`).join("");
+}
+
+/* ---------------- video player ---------------- */
+function playVideo(key) {
+  const [title, src] = VIDEOS[key], d = $("vid"), v = $("vid-el");
+  $("vid-title").textContent = title;
+  v.src = src;
+  if (typeof d.showModal === "function") d.showModal(); else d.setAttribute("open", "");
+  v.play().catch(() => { /* user can press play */ });
+}
+document.addEventListener("click", (e) => { const b = e.target.closest("[data-video]"); if (b) { e.preventDefault(); e.stopPropagation(); playVideo(b.dataset.video); } });
+
 /* ---------------- boot + routing ---------------- */
-const VIEWS = ["pricer", "hedging", "trend", "risk", "pairs"], DRAW = { pricer, hedging, trend, risk, pairs };
+const VIEWS = ["start", "planner", "strategy", "pricer", "hedging", "trend", "risk", "pairs"], DRAW = { start, planner, strategy, pricer, hedging, trend, risk, pairs };
 function route() {
-  const v = VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : "pricer";
+  const v = VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : "start";
   VIEWS.forEach((k) => { $("v-" + k).hidden = k !== v; });
   document.querySelectorAll("nav.tabs a").forEach((a) => a.setAttribute("aria-current", a.getAttribute("href") === "#" + v ? "page" : "false"));
   DRAW[v]();
@@ -682,6 +1051,7 @@ async function boot() {
     return;
   }
   $("loading").hidden = true;
+  renderExplain();
   DATES = NIFTY.dates.map((d) => new Date(d));
   RET = NIFTY.close.map((p, i) => (i === 0 ? 0 : p / NIFTY.close[i - 1] - 1) + 0.013 / 252);
   CASH = Math.pow(1.06, 1 / 252) - 1;
@@ -716,6 +1086,20 @@ async function boot() {
   $("t-sma").onclick = () => { T.kind = "SMA"; setSeg(["t-sma", "t-ema"], "t-sma"); trend(); };
   $("t-ema").onclick = () => { T.kind = "EMA"; setSeg(["t-sma", "t-ema"], "t-ema"); trend(); };
   $("pa-sector").onchange = pairs;
+  on(["tp-inst", "tp-cap", "tp-risk", "tp-entry", "tp-stop", "tp-tgt", "tp-lot", "tp-brk"], "input", planner);
+  let st;
+  on(["tp-wr", "tp-rr"], "input", () => { clearTimeout(st); st = setTimeout(plannerSim, 40); });
+  $("tp-long").onclick = () => { TP.side = "long"; setSeg(["tp-long", "tp-short"], "tp-long"); planner(); };
+  $("tp-short").onclick = () => { TP.side = "short"; setSeg(["tp-long", "tp-short"], "tp-short"); planner(); };
+  $("os-name").innerHTML = [...Object.keys(OS_DESC), "Custom"].map((n) => `<option${n === OS.name ? " selected" : ""}>${n}</option>`).join("");
+  $("os-name").onchange = () => { if ($("os-name").value !== "Custom") osLoad($("os-name").value); };
+  on(["os-days", "os-iv", "os-lot"], "input", () => { if (OS.name === "Custom") strategy(); else osReprice(); });
+  $("os-S").addEventListener("change", () => { if (OS.name === "Custom") strategy(); else osLoad(OS.name); });
+  $("os-add").onclick = () => { const p = osParams(); const L = { side: 1, type: "call", strike: Math.round(p.S / 50) * 50, lots: 1 }; L.premium = +QL.legPremium(L, p.S, p.T, p.r, p.iv, p.q).toFixed(2); OS.legs.push(L); OS.name = "Custom"; $("os-name").value = "Custom"; strategy(); };
+  $("os-reset").onclick = osReprice;
+  $("vid-close").onclick = () => { $("vid-el").pause(); $("vid").close(); };
+  $("vid").addEventListener("close", () => $("vid-el").pause());
+  OS.legs = QL.strategyTemplate(OS.name, 24000).map((L) => ({ ...L, premium: +QL.legPremium(L, 24000, 7 / 365, 0.06, 0.13, 0.013).toFixed(2) }));
   addEventListener("hashchange", route);
   let rt;
   addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(route, 150); });

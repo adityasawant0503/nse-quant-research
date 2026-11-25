@@ -220,8 +220,166 @@
     return { CAGR: Math.pow(eq, 252 / n) - 1, Sharpe: (m * 252 - rf) / vol, MaxDD: mdd };
   }
 
+  // ---------- NSE charges (statutory rates after the Budget 2026 STT revision) ----------
+  // Fractions of turnover. Options rates apply to premium turnover.
+  const CHARGES = {
+    equity_delivery: { label: "Equity delivery", sttBuy: 0.001, sttSell: 0.001, stampBuy: 0.00015, exch: 0.0000297, brokerage: "zero" },
+    equity_intraday: { label: "Equity intraday", sttBuy: 0, sttSell: 0.00025, stampBuy: 0.00003, exch: 0.0000297, brokerage: "capped" },
+    futures: { label: "Futures", sttBuy: 0, sttSell: 0.0005, stampBuy: 0.00002, exch: 0.0000183, brokerage: "capped" },
+    options: { label: "Options (premium)", sttBuy: 0, sttSell: 0.0015, stampBuy: 0.00003, exch: 0.0003503, brokerage: "flat" },
+  };
+  const SEBI = 0.000001, GST = 0.18;
+  // charges for one order. brokerage: flat rupees per order ("capped" = min(flat, 0.03% of turnover))
+  function orderCharges(inst, side, turnover, brokerageFlat = 20) {
+    const c = CHARGES[inst];
+    const brk = c.brokerage === "zero" ? 0 : c.brokerage === "capped" ? Math.min(brokerageFlat, 0.0003 * turnover) : brokerageFlat;
+    const stt = turnover * (side === "buy" ? c.sttBuy : c.sttSell);
+    const stamp = side === "buy" ? turnover * c.stampBuy : 0;
+    const exch = turnover * c.exch, sebi = turnover * SEBI, gst = (brk + exch + sebi) * GST;
+    return { brokerage: brk, stt, exchange: exch, sebi, gst, stamp, total: brk + stt + exch + sebi + gst + stamp };
+  }
+  const addCharges = (a, b) => Object.fromEntries(Object.keys(a).map((k) => [k, a[k] + b[k]]));
+
+  // ---------- trade planner ----------
+  // Long: stop below entry. Short: stop above. Quantity is the largest whole number (or whole lots)
+  // whose loss at the stop, including round-trip charges, stays within capital x risk%.
+  function positionSize({ capital, riskPct, entry, stop, target, side = "long", inst = "equity_intraday", lotSize = 1, brokerage = 20 }) {
+    const dir = side === "long" ? 1 : -1;
+    if (!(entry > 0 && stop > 0) || (entry - stop) * dir <= 0) return { error: side === "long" ? "For a long trade the stop-loss must be below the entry price." : "For a short trade the stop-loss must be above the entry price." };
+    const budget = capital * riskPct, step = inst === "futures" || inst === "options" ? lotSize : 1;
+    const openSide = dir > 0 ? "buy" : "sell", closeSide = dir > 0 ? "sell" : "buy";
+    const lossAt = (q, exitPx) => {
+      const ch = addCharges(orderCharges(inst, openSide, q * entry, brokerage), orderCharges(inst, closeSide, q * exitPx, brokerage));
+      return { gross: (entry - exitPx) * dir * q, charges: ch };
+    };
+    let q = Math.floor(budget / Math.abs(entry - stop) / step) * step;
+    while (q > 0) {
+      const l = lossAt(q, stop);
+      if (l.gross + l.charges.total <= budget) break;
+      q -= step;
+    }
+    if (q <= 0) return { error: `Your risk budget of ₹${budget.toFixed(0)} is too small for even ${step === 1 ? "one share" : "one lot"} at this stop distance. Widen the budget or tighten the stop.` };
+    const atStop = lossAt(q, stop);
+    const out = { qty: q, lots: step > 1 ? q / step : null, notional: q * entry, budget,
+      lossAtStop: atStop.gross + atStop.charges.total, chargesAtStop: atStop.charges };
+    if (target > 0) {
+      if ((target - entry) * dir <= 0) out.targetError = "Target is on the wrong side of the entry.";
+      else {
+        const ch = addCharges(orderCharges(inst, openSide, q * entry, brokerage), orderCharges(inst, closeSide, q * target, brokerage));
+        out.profitAtTarget = (target - entry) * dir * q - ch.total;
+        out.chargesAtTarget = ch;
+        out.rr = out.profitAtTarget / out.lossAtStop;
+      }
+    }
+    // price move needed just to cover round-trip charges
+    const be = addCharges(orderCharges(inst, openSide, q * entry, brokerage), orderCharges(inst, closeSide, q * entry, brokerage));
+    out.breakevenMove = be.total / q;
+    return out;
+  }
+  // expected value per trade, in multiples of the amount risked (R)
+  function expectancy(winRate, rr) {
+    return { evR: winRate * rr - (1 - winRate), breakevenWinRate: 1 / (1 + rr) };
+  }
+  // simulate n trades many times, risking riskPct of current equity each time
+  function simulateTrades({ winRate, rr, riskPct, n = 100, paths = 2000, seed = 7, keep = 30 }) {
+    const g = rng(seed), finals = [], dds = [], streaks = [], sample = [];
+    for (let k = 0; k < paths; k++) {
+      let eq = 1, peak = 1, mdd = 0, streak = 0, worst = 0;
+      const path = k < keep ? [1] : null;
+      for (let t = 0; t < n; t++) {
+        const win = g.uni() < winRate;
+        eq *= 1 + (win ? rr * riskPct : -riskPct);
+        streak = win ? 0 : streak + 1; worst = Math.max(worst, streak);
+        peak = Math.max(peak, eq); mdd = Math.min(mdd, eq / peak - 1);
+        if (path) path.push(eq);
+      }
+      finals.push(eq); dds.push(mdd); streaks.push(worst);
+      if (path) sample.push(path);
+    }
+    const q = (arr, p) => { const s = [...arr].sort((a, b) => a - b); return s[Math.min(s.length - 1, Math.floor(p * s.length))]; };
+    return { p10: q(finals, 0.1), p50: q(finals, 0.5), p90: q(finals, 0.9), lossProb: finals.filter((x) => x < 1).length / paths,
+      medianMaxDD: q(dds, 0.5), worstDD10: q(dds, 0.1), medianStreak: q(streaks, 0.5), streak90: q(streaks, 0.9), sample };
+  }
+
+  // ---------- option strategies ----------
+  // leg: {side: +1 buy / -1 sell, type: "call" | "put" | "future", strike, lots, premium}
+  function strategyTemplate(name, S, step = 50, width = 200) {
+    const A = Math.round(S / step) * step;
+    const T = {
+      "Long call": [[1, "call", A]], "Long put": [[1, "put", A]],
+      "Bull call spread": [[1, "call", A], [-1, "call", A + width]],
+      "Bear put spread": [[1, "put", A], [-1, "put", A - width]],
+      "Long straddle": [[1, "call", A], [1, "put", A]],
+      "Short straddle": [[-1, "call", A], [-1, "put", A]],
+      "Short strangle": [[-1, "call", A + 1.5 * width], [-1, "put", A - 1.5 * width]],
+      "Iron condor": [[-1, "call", A + width], [1, "call", A + 2 * width], [-1, "put", A - width], [1, "put", A - 2 * width]],
+      "Covered call": [[1, "future", A], [-1, "call", A + width]],
+      "Protective put": [[1, "future", A], [1, "put", A - width / 2]],
+    };
+    return (T[name] || T["Long call"]).map(([side, type, strike]) => ({ side, type, strike, lots: 1 }));
+  }
+  function legPremium(leg, S, T, r, iv, q) {
+    return leg.type === "future" ? S * Math.exp((r - q) * T) : bsPrice(S, leg.strike, T, r, iv, leg.type, q);
+  }
+  function strategyPayoff(legs, ST, lot) {   // P&L at expiry, rupees
+    let v = 0;
+    for (const L of legs) {
+      const q = L.side * L.lots * lot;
+      if (L.type === "future") v += q * (ST - L.premium);
+      else v += q * ((L.type === "call" ? Math.max(ST - L.strike, 0) : Math.max(L.strike - ST, 0)) - L.premium);
+    }
+    return v;
+  }
+  function strategyValue(legs, S, T, r, iv, q, lot) {   // mark-to-model P&L before expiry
+    let v = 0;
+    for (const L of legs) {
+      const qty = L.side * L.lots * lot;
+      v += qty * ((L.type === "future" ? S * Math.exp((r - q) * T) : bsPrice(S, L.strike, T, r, iv, L.type, q)) - L.premium);
+    }
+    return v;
+  }
+  function strategyGreeks(legs, S, T, r, iv, q, lot) {
+    const g = { delta: 0, gamma: 0, vega: 0, theta: 0 };
+    for (const L of legs) {
+      const qty = L.side * L.lots * lot;
+      if (L.type === "future") { g.delta += qty * Math.exp((r - q) * T); continue; }
+      const x = bsGreeks(S, L.strike, T, r, iv, L.type, q);
+      g.delta += qty * x.delta; g.gamma += qty * x.gamma; g.vega += qty * x.vega / 100; g.theta += qty * x.theta / 365;
+    }
+    return g;
+  }
+  function strategyStats(legs, S, T, r, iv, q, lot) {
+    const lo = 0, hi = S * 3, n = 6000, xs = [], ys = [];
+    for (let i = 0; i <= n; i++) { const x = lo + (hi - lo) * i / n; xs.push(x); ys.push(strategyPayoff(legs, x, lot)); }
+    const be = [];
+    for (let i = 1; i <= n; i++) if ((ys[i - 1] < 0) !== (ys[i] < 0)) be.push(xs[i - 1] + (xs[i] - xs[i - 1]) * (0 - ys[i - 1]) / (ys[i] - ys[i - 1]));
+    const slopeHi = ys[n] - ys[n - 1];
+    const maxP = slopeHi > 1e-9 ? Infinity : Math.max(...ys), maxL = slopeHi < -1e-9 ? -Infinity : Math.min(...ys);
+    // probability the payoff ends positive, lognormal terminal price at the chosen implied vol
+    const cdf = (x) => x <= 0 ? 0 : normCdf((Math.log(x / S) - (r - q - 0.5 * iv * iv) * T) / (iv * Math.sqrt(T)));
+    let pop = 0;
+    const pts = [0, ...be, Infinity];
+    for (let i = 0; i < pts.length - 1; i++) {
+      const a = pts[i], b = pts[i + 1], mid = b === Infinity ? a * 1.5 + 1 : (a + b) / 2;
+      if (strategyPayoff(legs, mid, lot) > 0) pop += (b === Infinity ? 1 : cdf(b)) - cdf(a);
+    }
+    const net = legs.reduce((s, L) => s + (L.type === "future" ? 0 : -L.side * L.lots * lot * L.premium), 0);
+    return { breakevens: be, maxProfit: maxP, maxLoss: maxL, pop, netPremium: net };
+  }
+  function strategyCharges(legs, lot, brokerage = 20) {   // to open the position
+    let tot = null;
+    for (const L of legs) {
+      const turn = L.lots * lot * L.premium, inst = L.type === "future" ? "futures" : "options";
+      const c = orderCharges(inst, L.side > 0 ? "buy" : "sell", turn, brokerage);
+      tot = tot ? addCharges(tot, c) : c;
+    }
+    return tot;
+  }
+
   const QL = { erfc, normCdf, normPdf, rng, bsPrice, bsGreeks, binomialPrice, mcPrice, impliedVol,
-    realisedVol, hedgePnl, hedgeBacktest, gbmPath, movingAvg, runRule, perfStats };
+    realisedVol, hedgePnl, hedgeBacktest, gbmPath, movingAvg, runRule, perfStats,
+    CHARGES, orderCharges, positionSize, expectancy, simulateTrades,
+    strategyTemplate, legPremium, strategyPayoff, strategyValue, strategyGreeks, strategyStats, strategyCharges };
   if (typeof module !== "undefined" && module.exports) module.exports = QL;
   else root.QL = QL;
 })(typeof globalThis !== "undefined" ? globalThis : this);

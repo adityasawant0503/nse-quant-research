@@ -1,6 +1,6 @@
 # One-command workflows for the whole portfolio. Run `make help`.
 PY ?= .venv/bin/python
-.PHONY: help setup data test lint figures reproduce dashboard serve clean
+.PHONY: help setup data test lint figures reproduce dashboard videos serve clean
 
 help:
 	@echo "make setup      create .venv and install both packages"
@@ -9,6 +9,7 @@ help:
 	@echo "make lint       ruff lint"
 	@echo "make reproduce  data + figures + every study, printed to the terminal"
 	@echo "make dashboard  rebuild dashboard/data from both projects"
+	@echo "make videos     re-record the how-to videos (needs Playwright + ffmpeg)"
 	@echo "make serve      open the dashboard at http://localhost:8000"
 
 setup:
@@ -42,6 +43,9 @@ reproduce: data figures
 dashboard:
 	$(PY) dashboard/build_data.py
 	node dashboard/test_lib.mjs
+
+videos: dashboard
+	cd dashboard && node videos/make_videos.js
 
 serve: dashboard
 	cd dashboard && ../$(PY) -m http.server 8000

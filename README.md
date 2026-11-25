@@ -11,7 +11,7 @@ and tested the way a trading desk would test it. Every backtest:
 |---|---|---|
 | [**quant-finance**](quant-finance/) | Monte Carlo Value at Risk, pairs trading (cointegration), moving-average trend following | The 99% VaR was breached **3.1%** of months, not 1%. **0 of 18** cointegrated pairs stayed cointegrated. The famous 50/200 crossover ranked **67th of 70** rules. |
 | [**options-lab**](options-lab/) | Black-Scholes, binomial and Monte Carlo pricers, Greeks, implied volatility, a delta-hedging backtest | Hedged P&L tracks implied minus realised volatility (**corr 0.63**). Selling Nifty options at recent volatility **loses 0.13% a month** after hedging costs. |
-| [**dashboard**](dashboard/) | Interactive page: option pricer, hedging lab, trend explorer, VaR and pairs views | Recomputes live in the browser. The JavaScript port matches Python to 6 decimal places. |
+| [**dashboard**](dashboard/) | Interactive page with a plain-English guide and how-to videos: trade planner (position sizing with NSE charges), option strategy builder, pricer, and the research views | Live at **https://adityasawant0503.github.io/nse-quant-research/**. The JavaScript maths is checked against the Python. |
 
 ![Nifty hedging](options-lab/results/nifty_hedging.png)
 
@@ -20,7 +20,7 @@ and tested the way a trading desk would test it. Every backtest:
 ```bash
 make setup        # create .venv and install both packages
 make data         # download the Nifty datasets
-make test         # 53 Python tests + 22 checks that the dashboard's JS matches Python
+make test         # 53 Python tests + 44 checks of the dashboard's JS (vs Python and hand-checked values)
 make reproduce    # regenerate every figure and print every study
 make serve        # dashboard at http://localhost:8000
 ```

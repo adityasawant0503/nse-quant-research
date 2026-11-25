@@ -14,4 +14,5 @@ mkdir -p "$out/data"
 } > "$out/index.html"
 cp "$here/lib.js" "$out/"
 cp "$here"/data/*.json "$out/data/"
+if ls "$here"/videos/*.mp4 >/dev/null 2>&1; then mkdir -p "$out/videos" && cp "$here"/videos/*.mp4 "$out/videos/"; fi
 echo "site assembled in $out"

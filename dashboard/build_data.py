@@ -105,6 +105,10 @@ def main():
                          "trades": int((pos["2023-10-01":].diff().abs() > 0).sum())})
     res["pairs"] = rows
 
+    # ---- raw statutory rates, so test_lib.mjs can check the JS charge table against Python
+    from quantlab.costs import GST, SEBI_FEE  # noqa: E402
+    res["charges_raw"] = {"rates": {k: list(v) for k, v in INDIA_CHARGES.items()}, "sebi": SEBI_FEE, "gst": GST}
+
     # ---- costs table
     res["costs"] = [{"instrument": i, "buy_bps": r4(india_cost(i, "buy") * 1e4),
                      "sell_bps": r4(india_cost(i, "sell") * 1e4)} for i in INDIA_CHARGES]

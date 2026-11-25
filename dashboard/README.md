@@ -1,17 +1,31 @@
 # Nifty Quant Lab (interactive dashboard)
 
-One static web page that presents both projects:
-- **Option pricer**: live Black-Scholes, binomial tree and Monte Carlo prices,
+One static web page for two audiences: traders who want practical tools, and
+recruiters who want to see the research. It opens on a **Start here** page that
+explains everything in plain English, with a 1-minute video tour.
+
+**Tools (use them for real decisions)**
+- **Trade planner**: position size from capital, risk %, entry and stop. It
+  includes every NSE charge (STT, exchange fees, GST, stamp duty, SEBI fee,
+  brokerage) for intraday, delivery, futures and option buying. It also checks
+  expectancy and simulates 100 trades to show realistic losing streaks.
+- **Option strategy builder**: 10 Nifty templates (spreads, straddles,
+  strangles, iron condor, covered call, protective put) or custom legs. Shows
+  the payoff at expiry and today, max profit and loss, breakevens, chance of
+  profit, position Greeks and the charges to open.
+- **Option pricer**: Black-Scholes, binomial tree and Monte Carlo prices,
   Greeks, implied volatility and a put-call parity check.
-- **Hedging lab**: re-runs the 2001-2023 Nifty delta-hedging backtest in the
-  browser as you change the volatility markup, futures cost, hedge frequency and
-  option type. Includes a simulated hedging-error histogram.
-- **Trend explorer**: any SMA/EMA rule on Nifty, with costs and a look-ahead
-  toggle, plus clickable Sharpe heatmaps of all 70 rules.
-- **Value at Risk**: the monthly VaR backtest for four shock models, and the
-  effect of correlation on a Rs 1 crore portfolio.
-- **Pairs trading**: in-sample vs out-of-sample returns for 69 same-sector
-  pairs, with a filterable table.
+
+**Research (learn from it)**
+- **Hedging lab**: the 2001-2023 Nifty delta-hedging backtest, re-run live.
+- **Trend explorer**: any SMA/EMA rule, with costs and a look-ahead toggle.
+- **Value at Risk**: four models backtested, and the effect of correlation.
+- **Pairs trading**: in-sample vs out-of-sample for 69 Nifty pairs.
+
+Every tab has an "In plain English" panel (what it is, how to use it, what to
+notice, key terms) and a 20-40 second how-to video. The videos are recorded
+automatically by `videos/make_videos.js` (Playwright + ffmpeg); re-run it with
+`make videos` after changing the page.
 
 There's no framework and no build step: `index.html`, `lib.js` (the maths) and
 two JSON data files. The charts are hand-written SVG.
@@ -30,7 +44,7 @@ Opening `index.html` straight from disk won't work, because browsers block
 `lib.js` is a line-for-line JavaScript port of the Python libraries in
 `../options-lab` and `../quant-finance`. `build_data.py` exports the Nifty prices
 and the precomputed studies, along with Python reference values. `test_lib.mjs`
-checks the port against those values: prices, Greeks, the American put, Monte
+checks the port against those values, and the NSE charge rates against the Python cost model: prices, Greeks, the American put, Monte
 Carlo, implied volatility, all 271 hedging months and two trend rules all agree
 to about 6 decimal places.
 
