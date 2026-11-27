@@ -33,7 +33,7 @@ terms an interviewer will expect.
    tree, Monte Carlo), the Greeks, implied volatility, and a 22-year
    delta-hedging backtest. It showed that hedged option P&L is really a bet on
    implied versus realised volatility.
-5. **Engineering.** Installable packages, 53 tests, CI, a vectorised backtest
+5. **Engineering.** Installable packages, 60 tests, CI, a vectorised backtest
    that's 200x faster, and a dashboard whose JavaScript I verified against
    the Python.
 
@@ -300,11 +300,47 @@ VIX** is the implied volatility of Nifty options.
 
 ---
 
+## 5b. The volatility risk premium (the result that works)
+
+### In plain words
+Option buyers pay for insurance, so option prices usually assume Nifty will move
+**more than it actually does**. India VIX is the market's forecast of next month's
+volatility, read from option prices. Compare it with what Nifty then did, and the
+difference is what option sellers earn on average.
+
+### What I found (India VIX vs Nifty, 2008–2025)
+- VIX was above the next month's realised volatility on **81% of days**; median gap
+  **3.6 volatility points**; positive in **18 of 18 years**.
+- Three monthly strategies priced from that day's India VIX, with 0.15% STT on option
+  sales, all NSE charges and a bid-ask allowance:
+  - **Delta-hedged straddle** (cleanest bet on volatility). Entry rule chosen on
+    2008–16: *VIX above recent realised volatility and not spiking*. On 2017–25 it
+    earned **+0.27% of notional a month, Sharpe 1.36, worst month −2.4%**.
+  - **Iron condor** (loss capped by the wings): Sharpe 0.66, worst month −3.6%.
+  - **Short strangle** (no wings): Sharpe 0.54, worst month −9.2%.
+- The danger is clear in the worst months: April 2009 (−5.9%) and Covid. Gains are
+  small and steady; losses are rare and sharp. That's the price of the premium.
+
+### Likely questions
+- **Why does the premium exist?** People pay to insure portfolios against crashes,
+  and sellers demand compensation for crash risk. It's a risk premium, not free money.
+- **Why delta-hedge?** It removes Nifty's direction, so the P&L depends only on
+  implied vs realised volatility: exactly the thing being measured.
+- **Why the 'not spiking' filter?** Selling right after VIX jumps means selling into a
+  panic, when realised volatility often keeps rising. The filter skipped those months.
+- **What's missing?** Real option-chain prices (the smile), exact margin, and slippage
+  in fast markets. The study uses India VIX with a skew parameter instead.
+- **How is this different from Jane Street?** Jane Street was accused by SEBI of
+  moving the index itself on expiry days. This only prices what the market offers
+  and needs no market power. (Their appeal was pending when this was written.)
+
+---
+
 ## 6. Engineering (for software-leaning interviewers)
 
 - **Structure.** Two installable packages (`quantlab`, `optlab`), thin scripts,
   and tests next to the code.
-- **Testing.** 53 Python tests, including cross-checks between pricers,
+- **Testing.** 60 Python tests, including cross-checks between pricers,
   finite-difference Greeks, VaR calibration on simulated data, and a test that
   changing tomorrow's price can't change today's position (no look-ahead).
 - **Vectorisation.** The hedging backtest originally looped over 271 months.
@@ -393,7 +429,8 @@ it's true for you, so make sure it is: read the code and run it yourself.
 | Options check | Hull: call **10.4506**, put **5.5735** (S=K=100, T=1, r=5%, σ=20%) |
 | Monte Carlo | error 0.046 → **0.0088** (5x; about 28x fewer paths) |
 | Hedging | 271 months; **−0.13%** a month; costs −0.19%; corr **0.63**; break-even +1-2 vol pts |
-| Engineering | **53** tests; **200x** vectorisation speed-up; JS port verified to 6 decimal places |
+| Volatility premium | VIX > next-month realised on **81%** of days; median **+3.6 pts**; **18/18** years; hedged straddle rule **Sharpe 1.36** on 2017–25 |
+| Engineering | **60** tests; **200x** vectorisation speed-up; JS port verified to 6 decimal places |
 
 ---
 

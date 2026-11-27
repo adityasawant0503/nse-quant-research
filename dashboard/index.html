@@ -183,10 +183,7 @@ footer { margin-top: 28px; font-size: 12px; color: var(--muted); display: grid; 
     <a href="#strategy">Option strategies</a>
     <a href="#pricer">Option pricer</a>
     <span class="navlbl">Research</span>
-    <a href="#hedging">Hedging lab</a>
-    <a href="#trend">Trend explorer</a>
-    <a href="#risk">Value at Risk</a>
-    <a href="#pairs">Pairs trading</a>
+    <a href="#edge">Volatility edge</a>
   </nav>
 
   <div id="loading" class="loading">Loading Nifty data…</div>
@@ -204,15 +201,15 @@ footer { margin-top: 28px; font-size: 12px; color: var(--muted); display: grid; 
 
     <h3 class="sec">Tools you can use today</h3>
     <div class="cards" id="cards-tools"></div>
-    <h3 class="sec">Research: what 20 years of data says</h3>
+    <h3 class="sec">Research: the edge that held up</h3>
     <div class="cards" id="cards-research"></div>
 
     <h3 class="sec">Headline findings</h3>
     <div class="findings" id="findings">
-      <a class="finding" href="#hedging"><span class="l">Selling options</span><span class="k" id="f-hedge">–</span><span class="t">average monthly result of selling Nifty calls at recent volatility, after costs</span></a>
-      <a class="finding" href="#risk"><span class="l">Risk models</span><span class="k" id="f-var">–</span><span class="t">of months lost more than the "1-in-100" worst case. It should be 1%.</span></a>
-      <a class="finding" href="#pairs"><span class="l">Pairs trading</span><span class="k" id="f-pairs">–</span><span class="t">stock pairs that kept moving together after they were picked</span></a>
-      <a class="finding" href="#trend"><span class="l">Moving averages</span><span class="k" id="f-trend">–</span><span class="t">where the famous 50/200-day "golden cross" ranks among 70 rules</span></a>
+      <a class="finding" href="#edge"><span class="l">Volatility premium</span><span class="k" id="f-share">–</span><span class="t">of days since 2008 India VIX priced in more movement than Nifty delivered</span></a>
+      <a class="finding" href="#edge"><span class="l">Typical gap</span><span class="k" id="f-gap">–</span><span class="t">volatility points between India VIX and what followed (median)</span></a>
+      <a class="finding" href="#edge"><span class="l">On unseen data</span><span class="k" id="f-sharpe">–</span><span class="t">Sharpe ratio of the hedged straddle rule in 2017–2025, chosen on 2008–2016 only</span></a>
+      <a class="finding" href="#edge"><span class="l">Every year</span><span class="k" id="f-years">–</span><span class="t">years from 2008 to 2025 where the typical gap was positive</span></a>
     </div>
 
     <div class="panel">
@@ -246,7 +243,7 @@ footer { margin-top: 28px; font-size: 12px; color: var(--muted); display: grid; 
           <div class="field"><label for="tp-tgt">Target ₹</label><input type="number" id="tp-tgt" value="1530" step="0.05"></div>
         </div>
         <div class="row2">
-          <div class="field" id="tp-lot-f"><label for="tp-lot">Lot size</label><input type="number" id="tp-lot" value="75" step="1" min="1"></div>
+          <div class="field" id="tp-lot-f"><label for="tp-lot">Lot size</label><input type="number" id="tp-lot" value="65" step="1" min="1"></div>
           <div class="field"><label for="tp-brk">Brokerage per order ₹</label><input type="number" id="tp-brk" value="20" step="1" min="0"></div>
         </div>
         <p class="small muted" id="tp-hint"></p>
@@ -284,7 +281,7 @@ footer { margin-top: 28px; font-size: 12px; color: var(--muted); display: grid; 
         <p class="small muted" id="os-desc"></p>
         <div class="row2">
           <div class="field"><label for="os-S">Nifty level</label><input type="number" id="os-S" value="24000" step="50"></div>
-          <div class="field"><label for="os-lot">Lot size</label><input type="number" id="os-lot" value="75" step="1" min="1"></div>
+          <div class="field"><label for="os-lot">Lot size</label><input type="number" id="os-lot" value="65" step="1" min="1"></div>
         </div>
         <div class="field"><label for="os-days">Days to expiry <output id="os-days-o"></output></label><input type="range" id="os-days" min="1" max="60" value="7"></div>
         <div class="field"><label for="os-iv">Implied volatility (India VIX is a good guide) <output id="os-iv-o"></output></label><input type="range" id="os-iv" min="8" max="40" step="0.5" value="13"></div>
@@ -348,114 +345,43 @@ footer { margin-top: 28px; font-size: 12px; color: var(--muted); display: grid; 
     </div>
   </section>
 
-  <!-- ============ HEDGING ============ -->
-  <section class="view" id="v-hedging" hidden>
+  <!-- ============ VOLATILITY EDGE ============ -->
+  <section class="view" id="v-edge" hidden>
     <div class="intro">
-      <h2>Hedging lab</h2>
-      <p class="muted">Each month since 2001, sell a one-month at-the-money Nifty option and delta-hedge it with Nifty futures along the price path that really happened. There are no historical option prices here, so implied volatility is trailing 21-day realised volatility plus the markup you choose.</p>
+      <h2>Volatility edge</h2>
+      <p class="muted">Option prices in India usually assume Nifty will move more than it actually does. India VIX, the market's own forecast of the next month's volatility, has been higher than what followed on most days since 2008. Option sellers collect that gap. This study measures it and tests three ways of selling Nifty options, with every NSE charge.</p>
     </div>
+    <div class="stats" id="e-stats"></div>
     <div class="work">
       <div class="panel controls">
-        <div class="seg" role="group" aria-label="Option sold">
-          <button type="button" id="h-call" aria-pressed="true">Short call</button>
-          <button type="button" id="h-put" aria-pressed="false">Short put</button>
-        </div>
-        <div class="field"><label for="h-mk">Vol markup <output id="h-mk-o"></output></label><input type="range" id="h-mk" min="0" max="6" step="0.5" value="0"></div>
-        <div class="field"><label for="h-cost">Futures cost per side <output id="h-cost-o"></output></label><input type="range" id="h-cost" min="0" max="20" step="0.2" value="7.8"></div>
-        <div class="field"><label for="h-every">Re-hedge</label>
-          <select id="h-every"><option value="1">Every day</option><option value="5">Every week</option><option value="21">Never (initial delta only)</option></select></div>
-        <p class="small muted">7.8 bps is the average of NSE futures buy (5.4) and sell (10.2) costs after the Budget 2026 STT increase.</p>
+        <h3>Check today</h3>
+        <div class="field"><label for="e-vix">Today's India VIX</label><input type="number" id="e-vix" step="0.05" min="5"></div>
+        <div class="field"><label for="e-rv">Nifty's volatility over the last month (%)</label><input type="number" id="e-rv" step="0.1" min="1"></div>
+        <div class="field"><label for="e-avg">India VIX average of the last 10 days</label><input type="number" id="e-avg" step="0.05" min="5"></div>
+        <p class="small muted">Filled in with the last values in the data (<span id="e-asof"></span>). Your broker shows India VIX; NSE publishes its history.</p>
+        <div id="e-verdict" class="callout"></div>
       </div>
       <div class="stack">
-        <div class="stats" id="h-stats"></div>
         <div class="panel">
-          <div class="chart-head"><h3>Cumulative P&amp;L, % of spot</h3><div class="legend" id="h-leg"></div></div>
-          <div class="chart" id="h-chart"></div>
+          <div class="chart-head"><h3>India VIX vs the volatility that actually followed</h3><div class="legend" id="e-leg1"></div></div>
+          <div class="chart" id="e-chart1"></div>
         </div>
         <div class="panel">
-          <div class="chart-head"><h3>Simulated: hedging error vs rebalances</h3><span class="small muted">1,000 simulated months, priced and realised at the same volatility</span></div>
-          <div class="row2" style="margin-bottom:10px">
-            <div class="field"><label for="h-sim-n">Rebalances per month <output id="h-sim-n-o"></output></label><input type="range" id="h-sim-n" min="0" max="5" step="1" value="3"></div>
-            <div class="field"><label for="h-sim-real">Realised vol <output id="h-sim-real-o"></output></label><input type="range" id="h-sim-real" min="8" max="30" step="1" value="14"></div>
-          </div>
-          <div class="chart" id="h-sim"></div>
-          <p class="note" id="h-sim-note"></p>
+          <div class="chart-head"><h3>Selling Nifty options every month, after all charges</h3><div class="legend" id="e-leg2"></div></div>
+          <div class="chart" id="e-chart2"></div>
+          <p class="note" style="margin-top:6px">Cumulative P&amp;L as % of the Nifty value traded. Rules were chosen on 2008–2016 only; 2017–2025 was never used to choose them.</p>
         </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ TREND ============ -->
-  <section class="view" id="v-trend" hidden>
-    <div class="intro">
-      <h2>Trend explorer</h2>
-      <p class="muted">Hold NIFTYBEES while the fast average is above the slow one, otherwise sit in cash earning 6%. Trades happen the day after the signal and pay ETF costs. Click any cell in the heatmaps to load that rule.</p>
-    </div>
-    <div class="work">
-      <div class="panel controls">
-        <div class="seg" role="group" aria-label="Average type">
-          <button type="button" id="t-sma" aria-pressed="true">SMA</button>
-          <button type="button" id="t-ema" aria-pressed="false">EMA</button>
-        </div>
-        <div class="row2">
-          <div class="field"><label for="t-fast">Fast</label><select id="t-fast"></select></div>
-          <div class="field"><label for="t-slow">Slow</label><select id="t-slow"></select></div>
-        </div>
-        <div class="field"><label for="t-cost">Cost per side <output id="t-cost-o"></output></label><input type="range" id="t-cost" min="0" max="40" step="0.5" value="6.2"></div>
-        <label class="check"><input type="checkbox" id="t-lag" checked> Trade the day after the signal</label>
-        <p class="small muted" id="t-lag-note">Untick to see look-ahead bias: trading on the same close that produced the signal.</p>
-      </div>
-      <div class="stack">
-        <div class="stats" id="t-stats"></div>
         <div class="panel">
-          <div class="chart-head"><h3>Growth of ₹1 (log scale)</h3><div class="legend" id="t-leg"></div></div>
-          <div class="chart" id="t-chart"></div>
-          <div class="chart" id="t-dd" style="margin-top:6px"></div>
+          <div class="chart-head"><h3>Walk-forward results, 2017–2025 (data the rules never saw)</h3></div>
+          <div class="scroll"><table class="t" id="e-table"></table></div>
+          <p class="note" style="margin-top:6px" id="e-note"></p>
         </div>
       </div>
     </div>
-    <div class="panel">
-      <div class="chart-head"><h3>Sharpe ratio of all 70 rules, 2002–2023</h3><span class="small muted" id="t-heat-note"></span></div>
-      <div class="heat-wrap"><div id="t-heat-SMA"></div><div id="t-heat-EMA"></div></div>
-    </div>
-  </section>
-
-  <!-- ============ RISK ============ -->
-  <section class="view" id="v-risk" hidden>
-    <div class="intro">
-      <h2>Value at Risk</h2>
-      <p class="muted">Every month from 2002 to 2023, a Monte Carlo model fitted on the previous year forecasts next month's worst-case Nifty loss. The bars show what actually happened. A 99% VaR should be broken about once every 100 months.</p>
-    </div>
-    <div class="panel">
-      <div class="chart-head">
-        <div class="seg" role="group" aria-label="Shock model" id="r-models"></div>
-        <div class="legend" id="r-leg"></div>
-      </div>
-      <div class="chart" id="r-chart"></div>
-    </div>
-    <div class="work" style="grid-template-columns: minmax(0,1fr) minmax(0,1fr)">
-      <div class="panel"><h3 style="margin-bottom:8px">Breaches by model</h3><div class="scroll"><table class="t" id="r-table"></table></div>
-        <p class="note" style="margin-top:8px">Fat tails (Student-t) barely help over a month, because 21 daily shocks average out. Weighting recent days (EWMA) makes it worse: markets are often calm just before they crash.</p></div>
-      <div class="panel"><h3 style="margin-bottom:8px">₹1 crore in five stocks: correlation drives risk</h3><div class="chart" id="r-corr"></div>
-        <p class="note" id="r-corr-note"></p></div>
-    </div>
-  </section>
-
-  <!-- ============ PAIRS ============ -->
-  <section class="view" id="v-pairs" hidden>
-    <div class="intro">
-      <h2>Pairs trading</h2>
-      <p class="muted">69 same-sector Nifty 50 pairs, tested for cointegration on Oct 2020 – Sep 2023 and then traded from Oct 2023 to Sep 2025 with the hedge ratio frozen. Both legs are costed as stock futures, because a cash-market short can't be held overnight in India.</p>
-    </div>
-    <div class="panel">
-      <div class="chart-head"><div class="field" style="min-width:220px"><label for="pa-sector">Sector</label><select id="pa-sector"></select></div><div class="legend" id="pa-leg"></div></div>
-      <div class="chart" id="pa-chart"></div>
-    </div>
-    <div class="panel"><div class="scroll"><table class="t" id="pa-table"></table></div></div>
   </section>
 
   <footer>
-    <span>Data: Nifty 50 index daily closes 2001–2023 and 50 Nifty 50 stocks Oct 2020 – Sep 2025, from public GitHub datasets. Rates r = 6%, dividend yield 1.3%. NSE charges after the Budget 2026 STT revision.</span>
+    <span>Data: Nifty 50 daily closes 2001–2025 and India VIX 2008–2025, from public GitHub datasets. Rates r = 6%, dividend yield 1.3%. NSE charges after the Budget 2026 STT revision.</span>
     <span>Everything recomputes in your browser with the same maths as the Python projects (checked to 6 decimal places). Charges and lot sizes change: confirm them with your broker. Educational research, not investment advice.</span>
   </footer>
 </div>
@@ -471,7 +397,7 @@ const pct = (x, d = 1) => (x * 100).toFixed(d) + "%";
 const spct = (x, d = 2) => (x >= 0 ? "+" : "−") + Math.abs(x * 100).toFixed(d) + "%";
 const inr = (x) => "₹" + x.toLocaleString("en-IN", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
-let NIFTY, RES, DATES;
+let NIFTY, RES, DATES, RET, CASH;
 
 /* ---------------- minimal SVG charting with hover ---------------- */
 function niceTicks(lo, hi, n = 5) {
@@ -662,164 +588,46 @@ function ivUpdate() {
   $("p-iv").textContent = Number.isFinite(iv) ? `Implied volatility: ${(iv * 100).toFixed(2)}%` : "That price is outside no-arbitrage bounds, so no volatility fits it.";
 }
 
-/* ---------------- HEDGING ---------------- */
-const H = { kind: "call" };
-function hedging() {
-  const mk = +$("h-mk").value / 100, cost = +$("h-cost").value / 1e4, every = +$("h-every").value;
-  $("h-mk-o").textContent = "+" + (mk * 100).toFixed(1) + " pts";
-  $("h-cost-o").textContent = (cost * 1e4).toFixed(1) + " bps";
-  const runs = [[mk, cost, css("--s1"), `Your settings`], [0, 0.00078, css("--grey"), "Baseline: no markup, 7.8 bps, daily"]];
-  const series = [];
-  let main;
-  for (const [m, c, col, name] of runs) {
-    const bt = QL.hedgeBacktest(NIFTY.close, { markup: m, cost: c, every: name === "Your settings" ? every : 1, kind: H.kind });
-    if (!main) main = bt;
-    let cum = 0;
-    series.push({ name, color: col, values: bt.map((d) => (cum += d.pnl) * 100), width: name === "Your settings" ? 2.2 : 1.5, dash: name === "Your settings" ? "none" : "4 3" });
-  }
-  const pnl = main.map((d) => d.pnl), n = pnl.length, mean = pnl.reduce((a, b) => a + b) / n;
-  const sd = Math.sqrt(pnl.reduce((a, b) => a + (b - mean) ** 2, 0) / (n - 1));
-  let wi = 0; pnl.forEach((v, i) => { if (v < pnl[wi]) wi = i; });
-  const prem = main.reduce((a, d) => a + d.premium, 0) / n;
-  $("h-stats").innerHTML = [
-    ["Average P&L / month", spct(mean, 3), mean >= 0 ? "pos" : "neg"],
-    ["Win rate", pct(pnl.filter((v) => v > 0).length / n, 0), ""],
-    ["Worst month", spct(pnl[wi]), "neg", dateFmt(DATES[main[wi].i])],
-    ["Sharpe (annualised)", (mean / sd * Math.sqrt(12)).toFixed(2), ""],
-    ["Premium received", pct(prem, 2), "", "of spot, average"],
-  ].map(([nm, v, c, s]) => `<div class="stat"><span class="n">${nm}</span><span class="v ${c}">${v}</span>${s ? `<span class="n">${s}</span>` : ""}</div>`).join("");
-  legend($("h-leg"), series.map((s) => ({ name: s.name, color: s.color })));
-  lineChart($("h-chart"), { x: main.map((d) => years(d.i)), series, zero: true, yFmt: (v) => Math.round(v) + "%", tipFmt: (v) => v.toFixed(1) + "%",
-    xFmt: yearFmt, tipX: (v, i) => DATES[main[i].i].toLocaleDateString("en-IN", { month: "short", year: "numeric" }), label: "Cumulative hedged P&L" });
-  simulate();
-}
-function simulate() {
-  const reb = [1, 2, 5, 21, 63, 168][+$("h-sim-n").value], real = +$("h-sim-real").value / 100, imp = 0.14;
-  $("h-sim-n-o").textContent = reb;
-  $("h-sim-real-o").textContent = (real * 100).toFixed(0) + "%";
-  const steps = 168, every = steps / reb, g = QL.rng(42), T = 21 / 252, out = [];
-  for (let k = 0; k < 1000; k++) out.push(QL.hedgePnl(QL.gbmPath(100, T, 0.08, real, steps, g, 0.013), 100, T, 0.06, imp, "call", 0.013, every, 0) * 100);
-  const lo = -3, hi = 3, nb = 40, w = (hi - lo) / nb, counts = new Array(nb).fill(0);
-  for (const v of out) counts[Math.min(nb - 1, Math.max(0, Math.floor((v - lo) / w)))]++;
-  const mean = out.reduce((a, b) => a + b) / out.length, sd = Math.sqrt(out.reduce((a, b) => a + (b - mean) ** 2, 0) / (out.length - 1));
-  lineChart($("h-sim"), { x: counts.map((_, i) => lo + (i + 0.5) * w), bars: { values: counts, name: "Months", colors: counts.map((_, i) => lo + (i + 0.5) * w < 0 ? css("--s2") : css("--s1")) },
-    yFmt: (v) => String(Math.round(v)), xFmt: (v) => v.toFixed(1) + "%", tipX: (v) => `P&L ${(v - w / 2).toFixed(2)}% to ${(v + w / 2).toFixed(2)}%`, height: 200, zero: true,
-    xTicks: [-3, -2, -1, 0, 1, 2, 3], label: "Distribution of hedged P&L" });
-  $("h-sim-note").textContent = `Sold at 14% implied vol. Mean ${mean >= 0 ? "+" : "−"}${Math.abs(mean).toFixed(2)}% of spot, standard deviation ${sd.toFixed(2)}%. ` +
-    (Math.abs(real - imp) < 0.005 ? "With implied equal to realised, the average is near zero; only the spread shrinks as you hedge more often." :
-      real > imp ? "Realised above implied: the short option loses on average however often you hedge." : "Realised below implied: the short option earns on average.");
-}
-
-/* ---------------- TREND ---------------- */
-const T = { kind: "SMA", fast: 50, slow: 200 };
-let RET, CASH;
-function trend() {
-  const cost = +$("t-cost").value / 1e4, lag = $("t-lag").checked;
-  $("t-cost-o").textContent = (cost * 1e4).toFixed(1) + " bps";
-  if (T.fast >= T.slow) { $("t-stats").innerHTML = `<div class="stat"><span class="n">Pick a fast average shorter than the slow one.</span></div>`; return; }
-  const px = NIFTY.close, warm = 250;
-  let { r, pos } = QL.runRule(px, RET, T.fast, T.slow, T.kind, cost, cost, CASH, warm);
-  if (!lag) { // look-ahead: trade on the same close that produced the signal
-    const f = QL.movingAvg(px, T.fast, T.kind), s = QL.movingAvg(px, T.slow, T.kind);
-    r = []; pos = [];
-    for (let i = warm; i < px.length; i++) { const p = f[i] > s[i] ? 1 : 0; pos.push(p); r.push(p * RET[i] + (1 - p) * CASH); }
-  }
-  const bh = RET.slice(warm), st = QL.perfStats(r, 0.06), sb = QL.perfStats(bh, 0.06);
-  const trades = pos.reduce((a, p, i) => a + (i && p !== pos[i - 1] ? 1 : 0), 0) / (r.length / 252);
-  const cmp = (a, b, hiGood = true) => (a > b) === hiGood ? "pos" : "neg";
-  $("t-stats").innerHTML = [
-    ["CAGR", pct(st.CAGR), cmp(st.CAGR, sb.CAGR), `buy & hold ${pct(sb.CAGR)}`],
-    ["Sharpe", st.Sharpe.toFixed(2), cmp(st.Sharpe, sb.Sharpe), `buy & hold ${sb.Sharpe.toFixed(2)}`],
-    ["Worst drawdown", pct(st.MaxDD), cmp(st.MaxDD, sb.MaxDD), `buy & hold ${pct(sb.MaxDD)}`],
-    ["Time in market", pct(pos.reduce((a, b) => a + b, 0) / pos.length, 0), "", `${trades.toFixed(1)} switches a year`],
+/* ---------------- VOLATILITY EDGE ---------------- */
+function edge() {
+  const V = RES.vrp, P = V.premium, M = V.monthly;
+  $("e-stats").innerHTML = [
+    ["Days India VIX was above what followed", pct(P.share_positive, 0), "pos", `${V.period[0].slice(0, 4)}–${V.period[1].slice(0, 4)}`],
+    ["Typical gap", P.median_gap * 100 > 0 ? "+" + (P.median_gap * 100).toFixed(1) + " pts" : (P.median_gap * 100).toFixed(1) + " pts", "pos", "median, volatility points"],
+    ["Years with a positive gap", `${Object.values(P.yearly_median_gap).filter((x) => x > 0).length} of ${Object.keys(P.yearly_median_gap).length}`, "pos", "median gap each year"],
+    ["Average India VIX", pct(P.vix_avg, 1), "", `vs ${pct(P.rv_next_avg, 1)} actually delivered`],
   ].map(([n, v, c, s]) => `<div class="stat"><span class="n">${n}</span><span class="v ${c}">${v}</span><span class="n">${s}</span></div>`).join("");
-  // weekly-sampled equity and drawdown
-  const idx = [], eqS = [], eqB = [], ddS = [], ddB = [];
-  let a = 1, b = 1, pa = 1, pb = 1;
-  for (let i = 0; i < r.length; i++) {
-    a *= 1 + r[i]; b *= 1 + bh[i]; pa = Math.max(pa, a); pb = Math.max(pb, b);
-    if (i % 5 === 0 || i === r.length - 1) { idx.push(years(i + warm)); eqS.push(a); eqB.push(b); ddS.push((a / pa - 1) * 100); ddB.push((b / pb - 1) * 100); }
-  }
-  const name = `${T.kind} ${T.fast === 1 ? "price" : T.fast}/${T.slow}${lag ? "" : " (look-ahead)"}`;
-  legend($("t-leg"), [{ name, color: css("--s1") }, { name: "Buy & hold", color: css("--grey") }]);
-  const tipX = (v) => { const y = Math.floor(v), mo = Math.round((v - y) * 12); return new Date(y, mo).toLocaleDateString("en-IN", { month: "short", year: "numeric" }); };
-  lineChart($("t-chart"), { x: idx, series: [{ name, values: eqS, color: css("--s1") }, { name: "Buy & hold", values: eqB, color: css("--grey"), width: 1.6 }],
-    log: true, yFmt: (v) => v + "x", tipFmt: (v) => v.toFixed(2) + "x", xFmt: yearFmt, tipX, height: 240, label: "Growth of one rupee" });
-  lineChart($("t-dd"), { x: idx, series: [{ name, values: ddS, color: css("--s1") }, { name: "Buy & hold", values: ddB, color: css("--grey"), width: 1.6 }],
-    yFmt: (v) => Math.round(v) + "%", tipFmt: (v) => v.toFixed(1) + "%", xFmt: yearFmt, tipX, height: 130, zero: true, label: "Drawdown" });
-  drawHeat();
+  const xs = M.dates.map((d) => +d.slice(0, 4) + (+d.slice(5) - 1) / 12);
+  legend($("e-leg1"), [{ name: "India VIX (what options priced in)", color: css("--s1") }, { name: "What Nifty actually moved, next month", color: css("--s2") }]);
+  lineChart($("e-chart1"), { x: xs, series: [{ name: "India VIX", values: M.vix.map((v) => v * 100), color: css("--s1") }, { name: "Delivered", values: M.rv_next.map((v) => v * 100), color: css("--s2"), width: 1.6 }],
+    yFmt: (v) => Math.round(v) + "%", tipFmt: (v) => v.toFixed(1) + "%", xFmt: (v) => String(Math.round(v)), tipX: (v, i) => M.dates[i], height: 240, label: "India VIX vs realised volatility" });
+  const names = { hedged_straddle: "Hedged straddle", iron_condor: "Iron condor", short_strangle: "Short strangle" }, cols = { hedged_straddle: css("--s1"), iron_condor: css("--s3"), short_strangle: css("--s2") };
+  const keys = Object.keys(names);
+  // all trade dates from every strategy (the filtered one skips some months), so no trade is dropped
+  const base = [...new Set(keys.flatMap((k) => V.curves[k].dates))].sort();
+  const series = keys.map((k) => { const c = V.curves[k], m = new Map(c.dates.map((d, i) => [d, c.pnl_pct[i]])); let cum = 0;
+    return { name: names[k], color: cols[k], values: base.map((d) => (cum += (m.get(d) || 0)) * 100) }; });
+  legend($("e-leg2"), keys.map((k) => ({ name: names[k] + (V.picks[k] !== "always" ? " (with entry filter)" : ""), color: cols[k] })));
+  lineChart($("e-chart2"), { x: base.map((d) => +d.slice(0, 4) + (+d.slice(5, 7) - 1) / 12), series, zero: true, yFmt: (v) => Math.round(v) + "%", tipFmt: (v) => v.toFixed(1) + "%",
+    xFmt: (v) => String(Math.round(v)), tipX: (v, i) => base[i], height: 240, label: "Cumulative P&L of option-selling strategies" });
+  const m = V.margin_assumption;
+  $("e-table").innerHTML = `<tr><th>Strategy</th><th>Entry rule (chosen on 2008–16)</th><th class="r">Avg / month</th><th class="r">On margin*</th><th class="r">Win rate</th><th class="r">Worst month</th><th class="r">Sharpe</th></tr>` +
+    keys.map((k) => { const r = V.strategies.find((x) => x.strategy === k && x.filter === V.picks[k]);
+      return `<tr><td>${names[k]}</td><td class="muted">${r.filter === "always" ? "every month" : r.filter === "both" ? "VIX above recent volatility and not spiking" : esc(r.filter)}</td><td class="r">${spct(r.oos_avg_pct, 2)}</td><td class="r">${spct(r.oos_avg_pct / m, 1)}</td><td class="r">${pct(r.oos_win_rate, 0)}</td><td class="r">${spct(r.oos_worst_pct, 1)}</td><td class="r">${r.oos_sharpe.toFixed(2)}</td></tr>`; }).join("");
+  $("e-note").textContent = `*Assumes margin of ${pct(m, 0)} of the Nifty value traded; real margins vary by broker and position. Prices come from India VIX on each entry day, with NSE charges (0.15% STT on option sales) and a bid-ask allowance. Losses can be large and sudden: the hedged straddle's worst month since 2008 was ${spct(V.strategies.find((x) => x.strategy === "hedged_straddle" && x.filter === V.picks.hedged_straddle).full_worst, 1)}. Past results do not guarantee future returns.`;
+  if (!$("e-vix").value) { const L = V.latest; $("e-vix").value = (L.vix * 100).toFixed(2); $("e-rv").value = (L.rv_past * 100).toFixed(1); $("e-avg").value = (L.vix * 100).toFixed(2); $("e-asof").textContent = L.date; }
+  edgeCheck();
 }
-function drawHeat() {
-  const G = RES.ma_grid, bh = G.buy_hold.Sharpe;
-  const all = [...G.grid.SMA, ...G.grid.EMA].map((d) => d.sharpe), lo = Math.min(...all), hi = Math.max(...all);
-  const s1 = css("--s1"), surf = css("--surface");
-  for (const kind of ["SMA", "EMA"]) {
-    const host = $("t-heat-" + kind), cols = G.slow.length + 1;
-    let h = `<h3 style="margin-bottom:6px">${kind} <span class="small muted" style="font-weight:400">rows fast, columns slow (days)</span></h3><div class="heat" style="grid-template-columns: 44px repeat(${cols - 1}, 1fr)"><div class="hd" title="rows: fast average, columns: slow average"></div>` + G.slow.map((s) => `<div class="hd">${s}</div>`).join("");
-    for (const f of G.fast) {
-      h += `<div class="hd">${f === 1 ? "price" : f}</div>`;
-      for (const s of G.slow) {
-        const d = G.grid[kind].find((x) => x.fast === f && x.slow === s);
-        if (!d) { h += `<div class="cell na"></div>`; continue; }
-        const t = (d.sharpe - lo) / (hi - lo), dark = t > 0.55;
-        const sel = kind === T.kind && f === T.fast && s === T.slow ? " sel" : "";
-        h += `<button type="button" class="cell${sel}" data-k="${kind}" data-f="${f}" data-s="${s}" title="${kind} ${f}/${s}: Sharpe ${d.sharpe.toFixed(2)}, CAGR ${pct(d.cagr)}, 2013-23 CAGR ${pct(d.oos_cagr)}"
-          style="background: color-mix(in srgb, ${s1} ${Math.round(12 + t * 88)}%, ${surf}); color:${dark ? "#fff" : "var(--ink)"}; font-weight:${d.sharpe > bh ? 700 : 400}">${d.sharpe.toFixed(2)}</button>`;
-      }
-    }
-    host.innerHTML = h + "</div>";
-  }
-  $("t-heat-note").textContent = `Bold beats buy & hold (${bh.toFixed(2)}). Darker is better.`;
-  document.querySelectorAll(".heat .cell[data-k]").forEach((c) => c.addEventListener("click", () => {
-    T.kind = c.dataset.k; T.fast = +c.dataset.f; T.slow = +c.dataset.s;
-    setSeg(["t-sma", "t-ema"], T.kind === "SMA" ? "t-sma" : "t-ema");
-    $("t-fast").value = T.fast; $("t-slow").value = T.slow; trend();
-  }));
-}
-
-/* ---------------- RISK ---------------- */
-let RISK_MODEL = "normal";
-function risk() {
-  const V = RES.var_backtest, xs = V.dates.map((d) => { const t = new Date(d); return t.getFullYear() + t.getMonth() / 12; });
-  const names = { normal: "Normal", "student-t": "Student-t", bootstrap: "Bootstrap", ewma: "EWMA" };
-  $("r-models").innerHTML = Object.entries(names).map(([k, n]) => `<button type="button" data-m="${k}" aria-pressed="${k === RISK_MODEL}">${n}</button>`).join("");
-  $("r-models").querySelectorAll("button").forEach((b) => b.addEventListener("click", () => { RISK_MODEL = b.dataset.m; risk(); }));
-  const v99 = V.var99[RISK_MODEL].map((x) => -x * 100), act = V.actual.map((x) => x * 100);
-  const br = act.map((a, i) => a < v99[i]);
-  legend($("r-leg"), [{ name: "Actual month", color: css("--bar-2") }, { name: "Forecast 99% VaR", color: css("--s1") }, { name: `Breach (${br.filter(Boolean).length})`, color: css("--bad"), dot: true }]);
-  lineChart($("r-chart"), { x: xs, bars: { values: act, name: "Actual", colors: act.map((a) => a >= 0 ? css("--bar") : css("--bar-2")) },
-    series: [{ name: "99% VaR", values: v99, color: css("--s1") }], points: xs.map((x, i) => br[i] ? { x, y: act[i], color: css("--bad") } : null).filter(Boolean),
-    zero: true, yFmt: (v) => Math.round(v) + "%", tipFmt: (v) => v.toFixed(1) + "%", xFmt: yearFmt,
-    tipX: (v, i) => new Date(V.dates[i]).toLocaleDateString("en-IN", { month: "short", year: "numeric" }), height: 280, label: "VaR backtest" });
-  $("r-table").innerHTML = `<tr><th>Model</th><th class="r">95% breaches</th><th class="r">99% breaches</th><th class="r">Mar 2020 forecast</th></tr>` +
-    Object.entries(names).map(([k, n]) => {
-      const b95 = V.actual.filter((a, i) => a < -V.var95[k][i]).length, b99 = V.actual.filter((a, i) => a < -V.var99[k][i]).length;
-      const mi = V.actual.indexOf(Math.min(...V.actual));
-      return `<tr><td>${n}</td><td class="r">${pct(b95 / V.actual.length)}</td><td class="r">${pct(b99 / V.actual.length)}</td><td class="r">${pct(-V.var99[k][mi], 0)}</td></tr>`;
-    }).join("") + `<tr><td class="muted">Promised</td><td class="r muted">5.0%</td><td class="r muted">1.0%</td><td class="r muted">actual ${pct(Math.min(...V.actual), 0)}</td></tr>`;
-  const C = RES.var_correlation, sc = [C.scenarios[1], C.scenarios[0], C.scenarios[2]];
-  const host = $("r-corr"), max = Math.max(...sc.map((s) => s.es_lakh));
-  host.innerHTML = `<div style="display:grid;gap:10px">` + sc.map((s) => `<div style="display:grid;grid-template-columns:90px 1fr;gap:8px;align-items:center">
-    <span class="small">${s.label}</span><div style="display:grid;gap:3px">
-    <div style="display:flex;align-items:center;gap:6px"><div style="height:12px;border-radius:0 4px 4px 0;background:var(--s1);width:${s.var_lakh / max * 80}%"></div><span class="small mono">VaR ₹${s.var_lakh.toFixed(1)} L</span></div>
-    <div style="display:flex;align-items:center;gap:6px"><div style="height:12px;border-radius:0 4px 4px 0;background:var(--s2);width:${s.es_lakh / max * 80}%"></div><span class="small mono">ES ₹${s.es_lakh.toFixed(1)} L</span></div></div></div>`).join("") + `</div>`;
-  const pairsAvg = C.corr.flatMap((r, i) => r.filter((_, j) => j > i)).reduce((a, b, _, arr) => a + b / arr.length, 0);
-  $("r-corr-note").textContent = `One-month 95% VaR and Expected Shortfall for ₹1 crore in ${C.tickers.join(", ")}. Average pairwise correlation is ${pairsAvg.toFixed(2)}; TCS and INFY alone are ${C.corr[2][3].toFixed(2)}.`;
-}
-
-/* ---------------- PAIRS ---------------- */
-function pairs() {
-  const sec = $("pa-sector").value, rows = RES.pairs.filter((p) => sec === "All" || p.sector === sec);
-  legend($("pa-leg"), [{ name: "Cointegrated in 2020–23", color: css("--s1"), dot: true }, { name: "Not cointegrated", color: css("--s2"), dot: true }]);
-  const all = RES.pairs.flatMap((p) => [p.ret_form * 100, p.ret_trade * 100]), lo = Math.min(...all), hi = Math.max(...all);
-  scatter($("pa-chart"), { points: rows.map((p) => ({ x: p.ret_form * 100, y: p.ret_trade * 100, color: p.coint ? css("--s1") : css("--s2"),
-    tip: `<b>${esc(p.pair)}</b><span class="muted">${esc(p.sector)}</span><span>2020–23: <span class="mono">${spct(p.ret_form, 1)}</span> a year</span><span>2023–25: <span class="mono">${spct(p.ret_trade, 1)}</span> a year</span><span>ADF ${p.adf_form.toFixed(2)} → ${p.adf_trade.toFixed(2)}</span>` })),
-    xInclude: [lo, hi], yInclude: [lo, hi], fmt: (v) => Math.round(v) + "%", xLabel: "Return while selecting, Oct 2020 – Sep 2023 (% a year)",
-    yLabel: "Return when traded (% a year)", lines: [{ x1: lo, y1: lo, x2: hi, y2: hi, label: "same as in-sample" }, { x1: lo, y1: 6, x2: hi, y2: 6, dash: "2 3", label: "6% risk-free" }], label: "Pairs in and out of sample" });
-  $("pa-table").innerHTML = `<tr><th>Pair</th><th>Sector</th><th class="r">ADF 2020–23</th><th class="r">ADF 2023–25</th><th class="r">Return 2020–23</th><th class="r">Return 2023–25</th><th>Status</th></tr>` +
-    rows.slice().sort((a, b) => a.adf_form - b.adf_form).map((p) => `<tr><td>${esc(p.pair)}</td><td class="muted">${esc(p.sector)}</td><td class="r">${p.adf_form.toFixed(2)}</td><td class="r">${p.adf_trade.toFixed(2)}</td>
-      <td class="r">${spct(p.ret_form, 1)}</td><td class="r">${spct(p.ret_trade, 1)}</td><td>${p.coint ? (p.adf_trade < -3.34 ? '<span class="chip yes">held</span>' : '<span class="chip no">broke</span>') : '<span class="chip">never</span>'}</td></tr>`).join("") +
-    `<tr><td colspan="7" class="small muted">ADF below −3.34 means cointegrated at 5% (Engle-Granger critical value). "Broke" means it passed while selecting and failed when traded.</td></tr>`;
+function edgeCheck() {
+  const vix = +$("e-vix").value, rv = +$("e-rv").value, avg = +$("e-avg").value;
+  if (!(vix > 0 && rv > 0 && avg > 0)) { $("e-verdict").textContent = "Enter all three numbers."; return; }
+  const c1 = vix > rv, c2 = vix / avg <= 1.1, gp = RES.vrp.premium.gap_pct, gap = (vix - rv) / 100;
+  const rank = gap <= gp["0.1"] ? "lower than 90% of days" : gap <= gp["0.25"] ? "lower than most days" : gap <= gp["0.75"] ? "about normal" : gap <= gp["0.9"] ? "higher than most days" : "higher than 90% of days";
+  $("e-verdict").innerHTML = `<b>${c1 && c2 ? "Conditions match the selling rule." : "Conditions don't match the selling rule."}</b><br>
+    ${c1 ? "✓" : "✗"} India VIX (${vix.toFixed(2)}) is ${c1 ? "above" : "not above"} Nifty's recent volatility (${rv.toFixed(1)}).<br>
+    ${c2 ? "✓" : "✗"} India VIX is ${c2 ? "not spiking" : "spiking"}: ${((vix / avg - 1) * 100).toFixed(0)}% vs its 10-day average (rule: at most +10%).<br>
+    <span class="small">Today's gap of ${(gap * 100).toFixed(1)} points is ${rank} (compared with the gap to next month's volatility since 2008).</span>`;
+  $("e-verdict").style.borderLeftColor = c1 && c2 ? css("--good") : css("--bad");
 }
 
 /* ---------------- plain-English layer ---------------- */
@@ -827,8 +635,7 @@ const VERDICT = { use: ["use", "Use it for real decisions"], learn: ["learn", "L
 const VIDEOS = {
   tour: ["The 1-minute tour", "videos/tour.mp4"], planner: ["Trade planner", "videos/planner.mp4"],
   strategy: ["Option strategy builder", "videos/strategy.mp4"], pricer: ["Option pricer", "videos/pricer.mp4"],
-  hedging: ["Hedging lab", "videos/hedging.mp4"], trend: ["Trend explorer", "videos/trend.mp4"],
-  risk: ["Value at Risk", "videos/risk.mp4"], pairs: ["Pairs trading", "videos/pairs.mp4"],
+  edge: ["Volatility edge", "videos/edge.mp4"],
 };
 const EXPLAIN = {
   planner: { group: "tools", verdict: "use", card: "How many shares or lots to buy so a stop-loss costs exactly what you planned, with every NSE charge included.",
@@ -846,28 +653,13 @@ const EXPLAIN = {
     steps: ["Set spot, strike, days to expiry and volatility.", "Compare the three prices: if they agree, the maths is right.", "Type a market price to find the volatility the market is implying."],
     look: "Watch theta: an at-the-money option loses value every day just from time passing. Vega shows how much a change in VIX moves the price.",
     gloss: "<b>Delta</b>: rupee change per 1-point Nifty move. <b>Theta</b>: value lost per day. <b>Vega</b>: change per 1 point of volatility. <b>Implied volatility</b>: the volatility that makes the formula match the market price." },
-  hedging: { group: "research", verdict: "learn", card: "Selling options and hedging them looks like steady income. 22 years of Nifty data say otherwise after costs.",
-    what: "Option sellers collect premium and hedge with futures so market direction doesn't matter. What's left is a bet that the market will move less than the option price assumed.",
-    steps: ["Start with no markup: this sells options at recent volatility.", "Drag the markup up until the average turns positive: that's the edge you'd need.", "Switch hedging to weekly or never and watch the worst month get much worse."],
-    look: "Costs decide the result. Without charges this strategy roughly breaks even; with them it loses. Single big days (like the May 2009 election result) cause the worst losses.",
-    gloss: "<b>Delta hedging</b>: holding futures to cancel out the option's sensitivity to Nifty. <b>Markup</b>: how many volatility points above recent volatility you sell at. India VIX usually sits above recent volatility." },
-  trend: { group: "research", verdict: "learn", card: "Do moving-average crossovers beat simply holding Nifty? Test all 70 versions, including the famous 50/200.",
-    what: "A trend rule buys Nifty when a short-term average price is above a long-term one, and moves to cash otherwise. It's one of the most popular trading ideas.",
-    steps: ["Pick a rule, or click any square in the heatmaps.", "Compare growth and the worst drop with buy-and-hold.", "Untick 'trade the day after' to see how a common backtest mistake inflates results."],
-    look: "Trend rules mostly don't earn more than buy-and-hold, but they avoid the deepest crashes. Use them as a risk control for long-term investing, not as a money machine.",
-    gloss: "<b>SMA/EMA</b>: simple or exponential moving average. <b>Drawdown</b>: fall from a previous peak. <b>Sharpe ratio</b>: return above the 6% risk-free rate per unit of volatility." },
-  risk: { group: "research", verdict: "learn", card: "Banks estimate a 'worst month' with Value at Risk. On Nifty it was broken three times as often as promised.",
-    what: "Value at Risk (VaR) estimates how much you could lose in a bad month. A 99% VaR should only be exceeded once in 100 months. This checks that promise against 22 years of data.",
-    steps: ["Look at the red dots: months that lost more than the forecast.", "Switch between the four models and compare their breach rates.", "Read the correlation panel: the same five stocks get riskier when they move together."],
-    look: "Crashes come after calm periods, so models built on recent calm data miss them. Treat any 'worst case' number as a minimum, not a limit.",
-    gloss: "<b>VaR</b>: loss you won't exceed with a given confidence. <b>Expected shortfall</b>: average loss in the bad cases beyond VaR. <b>Correlation</b>: how much stocks move together, from −1 to 1." },
-  pairs: { group: "research", verdict: "no", card: "Two related stocks that drift apart should come back together. This tests that on 69 Nifty pairs.",
-    what: "Pairs trading buys the cheaper of two linked stocks (like HDFC Bank and ICICI Bank) and sells the dearer one, betting the gap closes. It needs the pair to keep moving together.",
-    steps: ["Pick a sector to narrow the chart.", "Blue dots passed the statistical test when they were picked; check where they ended up.", "Read the table: 'broke' means the relationship stopped holding."],
-    look: "Every pair that tested as linked in 2020–23 stopped testing as linked in 2023–25. Relationships between stocks change, so this needs constant re-checking and stop-losses.",
-    gloss: "<b>Cointegration</b>: the gap between two prices keeps returning to an average. <b>ADF test</b>: the statistical test for that (below −3.34 passes). <b>Out of sample</b>: data that wasn't used to pick the pairs." },
+  edge: { group: "research", verdict: "use", card: "India VIX has priced in more movement than Nifty delivered on 81% of days since 2008. Measure that edge, see how selling options captured it, and check today's conditions.",
+    what: "An option's price depends on how much the market expects Nifty to move. India VIX measures that expectation. If VIX is usually higher than what really happens, option sellers are paid more than the risk they take, on average. This tests that on 18 years of data.",
+    steps: ["Look at the first chart: the blue line (VIX) usually sits above the orange line (what happened).", "Compare the three strategies in the second chart and the table. Rules were picked on 2008–2016, then tested on 2017–2025.", "Type today's India VIX and Nifty's recent volatility into 'Check today'."],
+    look: "The edge is real but comes with crash risk: small gains most months and occasional sharp losses. The hedged straddle with the entry rule had the best results on unseen data; iron condors cap the loss, which suits smaller accounts.",
+    gloss: "<b>India VIX</b>: the market's forecast of Nifty's volatility over the next 30 days, from option prices. <b>Realised volatility</b>: how much Nifty actually moved. <b>Delta-hedged</b>: holding Nifty futures so the position doesn't depend on direction. <b>Walk-forward</b>: choose rules on old data, judge them only on newer data." },
 };
-const TITLES = { planner: "Trade planner", strategy: "Option strategy builder", pricer: "Option pricer", hedging: "Hedging lab", trend: "Trend explorer", risk: "Value at Risk", pairs: "Pairs trading" };
+const TITLES = { planner: "Trade planner", strategy: "Option strategy builder", pricer: "Option pricer", edge: "Volatility edge" };
 function vbtn(key, label = "▶ Watch how to use it") { return VIDEOS[key] ? `<button type="button" class="vbtn" data-video="${key}">${label}</button>` : ""; }
 function renderExplain() {
   for (const [k, e] of Object.entries(EXPLAIN)) {
@@ -894,10 +686,7 @@ function start() {
     ["planner", "Size every trade so a stop-loss can't hurt more than planned, and know your charges before you enter."],
     ["strategy", "Check max loss, breakevens and chance of profit for any Nifty options trade before placing it."],
     ["pricer", "Judge whether an option premium looks cheap or expensive versus a fair model price."],
-    ["hedging", "Shows why selling options for 'income' needs prices well above recent volatility to survive costs and gaps."],
-    ["trend", "A slow trend filter can cut crash losses for long-term index investing. It is not a way to beat the market."],
-    ["risk", "Size positions assuming losses bigger than any model predicts. Diversification falls when you need it most."],
-    ["pairs", "Don't trade pairs on an old statistical test. Relationships between stocks break."],
+    ["edge", "Shows whether today's India VIX is rich enough for option selling to have paid historically, and which structure held up best on unseen data."],
   ].map(([k, t]) => `<tr><td><a href="#${k}">${TITLES[k]}</a></td><td><span class="verdict ${VERDICT[EXPLAIN[k].verdict][0]}">${VERDICT[EXPLAIN[k].verdict][1]}</span></td><td class="muted">${t}</td></tr>`).join("");
 }
 
@@ -1036,7 +825,7 @@ function playVideo(key) {
 document.addEventListener("click", (e) => { const b = e.target.closest("[data-video]"); if (b) { e.preventDefault(); e.stopPropagation(); playVideo(b.dataset.video); } });
 
 /* ---------------- boot + routing ---------------- */
-const VIEWS = ["start", "planner", "strategy", "pricer", "hedging", "trend", "risk", "pairs"], DRAW = { start, planner, strategy, pricer, hedging, trend, risk, pairs };
+const VIEWS = ["start", "planner", "strategy", "pricer", "edge"], DRAW = { start, planner, strategy, pricer, edge };
 function route() {
   const v = VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : "start";
   VIEWS.forEach((k) => { $("v-" + k).hidden = k !== v; });
@@ -1055,37 +844,18 @@ async function boot() {
   DATES = NIFTY.dates.map((d) => new Date(d));
   RET = NIFTY.close.map((p, i) => (i === 0 ? 0 : p / NIFTY.close[i - 1] - 1) + 0.013 / 252);
   CASH = Math.pow(1.06, 1 / 252) - 1;
-  // headline findings, computed live
-  const base = QL.hedgeBacktest(NIFTY.close, {}), m = base.reduce((a, d) => a + d.pnl, 0) / base.length;
-  $("f-hedge").textContent = spct(m, 2);
-  const V = RES.var_backtest, b99 = V.actual.filter((a, i) => a < -V.var99.normal[i]).length;
-  $("f-var").textContent = pct(b99 / V.actual.length);
-  const co = RES.pairs.filter((p) => p.coint);
-  $("f-pairs").textContent = `${co.filter((p) => p.adf_trade < -3.34).length} of ${co.length}`;
-  const sh = [...RES.ma_grid.grid.SMA.map((d) => ["SMA", d]), ...RES.ma_grid.grid.EMA.map((d) => ["EMA", d])].sort((a, b) => b[1].sharpe - a[1].sharpe);
-  $("f-trend").textContent = `${sh.findIndex(([k, d]) => k === "SMA" && d.fast === 50 && d.slow === 200) + 1} of 70`;
-  // controls
-  $("t-fast").innerHTML = RES.ma_grid.fast.map((f) => `<option value="${f}">${f === 1 ? "Price" : f + " days"}</option>`).join("");
-  $("t-slow").innerHTML = RES.ma_grid.slow.map((s) => `<option value="${s}">${s} days</option>`).join("");
-  $("t-fast").value = 50; $("t-slow").value = 200;
-  $("pa-sector").innerHTML = ["All", ...new Set(RES.pairs.map((p) => p.sector))].map((s) => `<option>${esc(s)}</option>`).join("");
+  // headline findings from the volatility study
+  const VP = RES.vrp.premium, hs = RES.vrp.strategies.find((x) => x.strategy === "hedged_straddle" && x.filter === RES.vrp.picks.hedged_straddle);
+  $("f-share").textContent = pct(VP.share_positive, 0);
+  $("f-gap").textContent = "+" + (VP.median_gap * 100).toFixed(1) + " pts";
+  $("f-sharpe").textContent = hs.oos_sharpe.toFixed(2);
+  $("f-years").textContent = `${Object.values(VP.yearly_median_gap).filter((x) => x > 0).length} of ${Object.keys(VP.yearly_median_gap).length}`;
   const on = (ids, ev, fn) => ids.forEach((id) => $(id).addEventListener(ev, fn));
   on(["p-S", "p-K", "p-days", "p-vol", "p-r", "p-q", "p-amer"], "input", pricer);
   $("p-mkt").addEventListener("input", ivUpdate);
   $("p-call").onclick = () => { P.kind = "call"; setSeg(["p-call", "p-put"], "p-call"); pricer(); };
   $("p-put").onclick = () => { P.kind = "put"; setSeg(["p-call", "p-put"], "p-put"); pricer(); };
-  let ht;
-  const hDeb = () => { clearTimeout(ht); ht = setTimeout(hedging, 60); };
-  on(["h-mk", "h-cost", "h-every"], "input", hDeb);
-  on(["h-sim-n", "h-sim-real"], "input", () => { clearTimeout(ht); ht = setTimeout(simulate, 40); });
-  $("h-call").onclick = () => { H.kind = "call"; setSeg(["h-call", "h-put"], "h-call"); hedging(); };
-  $("h-put").onclick = () => { H.kind = "put"; setSeg(["h-call", "h-put"], "h-put"); hedging(); };
-  on(["t-cost", "t-lag"], "input", trend);
-  $("t-fast").onchange = () => { T.fast = +$("t-fast").value; trend(); };
-  $("t-slow").onchange = () => { T.slow = +$("t-slow").value; trend(); };
-  $("t-sma").onclick = () => { T.kind = "SMA"; setSeg(["t-sma", "t-ema"], "t-sma"); trend(); };
-  $("t-ema").onclick = () => { T.kind = "EMA"; setSeg(["t-sma", "t-ema"], "t-ema"); trend(); };
-  $("pa-sector").onchange = pairs;
+  on(["e-vix", "e-rv", "e-avg"], "input", edgeCheck);
   on(["tp-inst", "tp-cap", "tp-risk", "tp-entry", "tp-stop", "tp-tgt", "tp-lot", "tp-brk"], "input", planner);
   let st;
   on(["tp-wr", "tp-rr"], "input", () => { clearTimeout(st); st = setTimeout(plannerSim, 40); });

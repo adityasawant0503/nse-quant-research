@@ -10,17 +10,19 @@ and tested the way a trading desk would test it. Every backtest:
 | Project | What it does | Headline result |
 |---|---|---|
 | [**quant-finance**](quant-finance/) | Monte Carlo Value at Risk, pairs trading (cointegration), moving-average trend following | The 99% VaR was breached **3.1%** of months, not 1%. **0 of 18** cointegrated pairs stayed cointegrated. The famous 50/200 crossover ranked **67th of 70** rules. |
-| [**options-lab**](options-lab/) | Black-Scholes, binomial and Monte Carlo pricers, Greeks, implied volatility, a delta-hedging backtest | Hedged P&L tracks implied minus realised volatility (**corr 0.63**). Selling Nifty options at recent volatility **loses 0.13% a month** after hedging costs. |
-| [**dashboard**](dashboard/) | Interactive page with a plain-English guide and how-to videos: trade planner (position sizing with NSE charges), option strategy builder, pricer, and the research views | Live at **https://adityasawant0503.github.io/nse-quant-research/**. The JavaScript maths is checked against the Python. |
+| [**options-lab**](options-lab/) | Black-Scholes, binomial and Monte Carlo pricers, Greeks, implied volatility, delta hedging, and the **India volatility risk premium** study | India VIX priced in more movement than Nifty delivered on **81% of days** since 2008 (median **+3.6 vol points**, positive in **18 of 18 years**). A delta-hedged straddle rule chosen on 2008–16 earned a **Sharpe of 1.36 on 2017–25**, after NSE charges. |
+| [**dashboard**](dashboard/) | Interactive page with a plain-English guide and how-to videos: trade planner (position sizing with NSE charges), option strategy builder, pricer and the volatility edge (with a 'check today' tool) | Live at **https://adityasawant0503.github.io/nse-quant-research/**. The JavaScript maths is checked against the Python. |
 
-![Nifty hedging](options-lab/results/nifty_hedging.png)
+![India volatility premium](options-lab/results/vrp_premium.png)
+
+![Option selling backtests](options-lab/results/vrp_strategies.png)
 
 ## Quick start
 
 ```bash
 make setup        # create .venv and install both packages
 make data         # download the Nifty datasets
-make test         # 53 Python tests + 44 checks of the dashboard's JS (vs Python and hand-checked values)
+make test         # 60 Python tests + 44 checks of the dashboard's JS (vs Python and hand-checked values)
 make reproduce    # regenerate every figure and print every study
 make serve        # dashboard at http://localhost:8000
 ```
@@ -56,8 +58,8 @@ INTERVIEW_GUIDE.md   every concept explained, numbers to remember, likely questi
 - **Sources.** Nifty 50 index daily closes (2001-2023) and 50 Nifty 50 stocks
   (Oct 2020 - Sep 2025), from public GitHub datasets. They're downloaded by
   `make data`, not committed.
-- **No historical option prices.** The options backtest models implied
-  volatility as trailing realised volatility plus a markup.
+- **Option prices come from India VIX,** not historical option-chain prices, so
+  the smile is approximated (a skew parameter) and bid-ask is an allowance.
 - **Survivorship bias.** The stock universe is today's Nifty 50.
 - **Not modelled.** Lot sizes, margin, futures roll and taxes.
 

@@ -9,7 +9,11 @@ update the numbers.
 
 - Built option pricing (Black-Scholes, binomial tree, Monte Carlo with variance
   reduction), Value at Risk, pairs-trading and trend-following libraries from
-  scratch, with 53 unit tests and CI, using real NSE trading costs.
+  scratch, with 60 unit tests and CI, using real NSE trading costs.
+- Measured India's volatility risk premium on 18 years of India VIX data: VIX
+  exceeded the next month's realised volatility on 81% of days (positive every
+  year). A delta-hedged straddle rule chosen on 2008–16 returned a Sharpe of
+  1.36 on unseen 2017–25 data after NSE charges, with a worst month of -2.4%.
 - Backtested 271 months of delta-hedged Nifty options and showed the P&L tracks
   the implied-vs-realised volatility gap (correlation 0.63). Vectorised the
   backtest for a 200x speed-up with identical results.
@@ -21,13 +25,16 @@ update the numbers.
 
 ## Option B: two entries (best for quant, risk or trading roles)
 
-**Option Pricing and Delta-Hedging Engine** · Python, NumPy, SciPy
+**Option Pricing and Volatility Risk Premium Research** · Python, NumPy, SciPy
 
 - Implemented Black-Scholes, binomial (European and American) and Monte Carlo
   pricers with analytic Greeks and an implied-volatility solver, cross-validated
   by 36 unit tests.
 - Cut Monte Carlo error 5x with antithetic and control variates (about 28x
   fewer simulations for the same accuracy).
+- Showed India VIX overpriced next-month volatility on 81% of days (2008–25) and
+  turned it into a walk-forward-tested option-selling rule (Sharpe 1.36 on unseen
+  2017–25 data, after 0.15% STT and all NSE charges).
 - Backtested 271 monthly delta-hedged Nifty options with NSE futures costs.
   Selling at recent realised volatility lost 0.13% of spot a month, and hedging
   costs, not volatility, turned the trade negative. Vectorised the backtest for

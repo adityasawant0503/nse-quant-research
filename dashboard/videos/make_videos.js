@@ -62,11 +62,11 @@ const SCRIPTS = {
   tour: async (d) => {
     await d.step("Nifty Quant Lab", "Tools to plan trades on Indian markets, and research on 20+ years of Nifty data", null, 2200);
     await d.step("Tools you can use today", "Size a trade, build an option strategy, price an option", () => d.moveTo("#cards-tools .card:nth-child(1)"), 1800);
-    await d.step("Research", "Popular strategies tested honestly, with real NSE charges", async () => { await d.show("#cards-research"); await d.moveTo("#cards-research .card:nth-child(1)"); }, 1800);
+    await d.step("Research", "The one edge that held up on unseen data, with real NSE charges", async () => { await d.show("#cards-research"); await d.moveTo("#cards-research .card:nth-child(1)"); }, 1800);
     await d.step("Each section says: use it, learn from it, or avoid it", "", () => d.show("#use-table"), 2000);
     await d.step("Trade planner", "How many shares to buy so your stop-loss costs exactly what you planned", () => d.click('nav.tabs a[href="#planner"]'), 2200);
     await d.step("Option strategy builder", "Max profit, max loss, breakevens and chance of profit for any Nifty options trade", () => d.click('nav.tabs a[href="#strategy"]'), 2400);
-    await d.step("Research tabs", "For example: does selling options and hedging them really make money?", () => d.click('nav.tabs a[href="#hedging"]'), 2200);
+    await d.step("Volatility edge", "18 years of India VIX data: where option sellers have an edge", () => d.click('nav.tabs a[href="#edge"]'), 2400);
     await d.step("Every tab has a plain-English guide", "and a short video like this one", () => d.moveTo(".view:not([hidden]) .explain summary"), 2400);
   },
   planner: async (d) => {
@@ -97,34 +97,14 @@ const SCRIPTS = {
     await d.step("The Greeks in plain words", "How the price reacts to Nifty, time and volatility", () => d.show("#p-greeks"), 2200);
     await d.step("Type a market price", "to see the volatility the market is implying", async () => { await d.type("#p-mkt", 600); await d.moveTo("#p-iv"); }, 2200);
   },
-  hedging: async (d) => {
-    await d.step("Hedging lab", "Sell a Nifty option every month since 2001 and hedge it with futures", null, 2000);
-    await d.step("Selling at recent volatility loses money", "after NSE futures costs", () => d.show("#h-stats"), 2000);
-    await d.step("Sell 2 volatility points higher", "and it roughly breaks even", () => d.slide("#h-mk", 2), 2000);
-    await d.step("Blue: your settings. Grey: the baseline", "", async () => { await d.slide("#h-mk", 4); await d.show("#h-chart"); }, 1800);
-    await d.step("Never re-hedging", "makes the worst month far worse", async () => { await d.select("#h-every", "21"); await d.show("#h-stats"); }, 2200);
-    await d.step("Hedge less often: wider spread of results", "", async () => { await d.show("#h-sim"); await d.slide("#h-sim-n", 1); }, 1600);
-    await d.step("Hedge more often: narrower spread", "but more charges", () => d.slide("#h-sim-n", 5), 1800);
-  },
-  trend: async (d) => {
-    await d.step("Trend explorer", "Hold Nifty when the fast average is above the slow one, otherwise cash", null, 2000);
-    await d.step("The famous 50/200 'golden cross'", "Less growth than buy-and-hold, but a smaller worst fall", () => d.show("#t-stats"), 2200);
-    await d.step("Click any square to load that rule", "Darker squares did better on 2002–2023", () => d.click('#t-heat-SMA .cell[data-f="1"][data-s="50"]'), 2200);
-    await d.step("Growth of ₹1 and the falls along the way", "", () => d.show("#t-chart"), 1800);
-    await d.step("Untick 'trade the day after'", "Results look better: that's a backtest mistake called look-ahead bias", async () => { await d.click("#t-lag"); await d.show("#t-stats"); }, 2600);
-  },
-  risk: async (d) => {
-    await d.step("Value at Risk", "A model forecasts next month's worst-case loss on Nifty", null, 1800);
-    await d.step("Red dots: months that lost more than the forecast", "It should happen 1 month in 100. It happened about 3", () => d.show("#r-chart"), 2600);
-    await d.step("Try other models", "Reacting faster to recent data made it worse", () => d.click('#r-models button[data-m="ewma"]'), 2200);
-    await d.step("Breach rates for each model", "", () => d.show("#r-table"), 1600);
-    await d.step("Same five stocks, ₹1 crore", "Risk jumps when stocks move together", () => d.show("#r-corr"), 2200);
-  },
-  pairs: async (d) => {
-    await d.step("Pairs trading", "Buy the cheaper of two linked stocks, sell the dearer one", null, 1800);
-    await d.step("Filter by sector", "Blue dots passed the 'linked' test when they were picked", async () => { await d.select("#pa-sector", "Private banks"); await d.show("#pa-chart"); }, 2200);
-    await d.step("Hover a dot for details", "", () => d.moveTo("#pa-chart circle[fill]"), 1600);
-    await d.step("'Broke' means the link stopped holding", "None of the 18 linked pairs stayed linked", () => d.show("#pa-table"), 2400);
+  edge: async (d) => {
+    await d.step("Volatility edge", "Do Indian option prices assume more movement than really happens?", null, 2000);
+    await d.step("Since 2008, India VIX was above what followed on 81% of days", "That gap is what option sellers earn", () => d.show("#e-stats"), 2400);
+    await d.step("Blue: what options priced in. Orange: what Nifty actually did", "", () => d.show("#e-chart1"), 2400);
+    await d.step("Three ways to sell options, after all NSE charges", "Rules chosen on 2008–2016, judged only on 2017–2025", () => d.show("#e-chart2"), 2600);
+    await d.step("Results on data the rules never saw", "Small gains most months, occasional sharp losses", () => d.show("#e-table"), 2400);
+    await d.step("Check today: type today's India VIX", "It tells you if conditions match the selling rule", async () => { await d.type("#e-vix", 13.5); await d.moveTo("#e-verdict"); }, 2400);
+    await d.step("A VIX spike breaks the rule", "Selling into a panic is when this strategy loses most", async () => { await d.type("#e-vix", 19); await d.moveTo("#e-verdict"); }, 2600);
   },
 };
 

@@ -105,6 +105,15 @@ def main():
                          "trades": int((pos["2023-10-01":].diff().abs() > 0).sum())})
     res["pairs"] = rows
 
+    # ---- India volatility-premium study (options-lab/scripts/vrp_study.py), plus a monthly series for the chart
+    vr = json.load(open(os.path.join(ROOT, "options-lab", "results", "vrp_results.json")))
+    from optlab import vrp as vrpmod  # noqa: E402
+    vt = vrpmod.vrp_table(vrpmod.load_vix_nifty(os.path.join(ROOT, "options-lab", "data"))).dropna()
+    mo = vt[["vix", "rv_next"]].resample("ME").mean().dropna()
+    vr["monthly"] = {"dates": [d.strftime("%Y-%m") for d in mo.index], "vix": [r4(x) for x in mo.vix],
+                     "rv_next": [r4(x) for x in mo.rv_next]}
+    res["vrp"] = vr
+
     # ---- raw statutory rates, so test_lib.mjs can check the JS charge table against Python
     from quantlab.costs import GST, SEBI_FEE  # noqa: E402
     res["charges_raw"] = {"rates": {k: list(v) for k, v in INDIA_CHARGES.items()}, "sebi": SEBI_FEE, "gst": GST}
