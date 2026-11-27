@@ -39,6 +39,7 @@ reproduce: data figures
 	cd quant-finance && ../$(PY) scripts/ma_sweep.py --csv data/nifty50_index.csv
 	cd quant-finance && ../$(PY) scripts/pairs_scan.py --dir data/nifty50_stocks
 	cd options-lab && ../$(PY) scripts/nifty_hedge_backtest.py --csv data/nifty50_index.csv
+	cd options-lab && ../$(PY) scripts/vrp_study.py --data data
 
 dashboard:
 	$(PY) dashboard/build_data.py
